@@ -58,7 +58,7 @@ async function main(){
     // Uncomment below
     fs.writeFileSync(path.join(directory, 'dict.json'),JSON.stringify(dict));
     // console.log(dict);
-    // mostUsedWords(dict);
+    mostUsedWords(dict);
 
     
     // result[text] = checkSimilarity(text,dictJson)
@@ -72,6 +72,7 @@ async function mapSolicitation(entry){
     solicitation["id"] = entry.hasOwnProperty("id")? entry.id : "";
     solicitation["programurl"] = entry.hasOwnProperty("programurl")? entry.programurl : "";
     solicitation["prog_title"] = entry.hasOwnProperty("prog_title")? entry.prog_title : "";
+    solicitation["total_funding_limit"] = entry.hasOwnProperty("total_funding_limit")? entry.total_funding_limit : "";
     if(solicitation.programurl != null){
         let abc = await textScrape(solicitation.programurl);
         solicitation["url_mining"] = abc;
@@ -267,7 +268,7 @@ function populateSet() {
 }
 
 async function textScrape(url){
-    console.log(url);
+    // console.log(url);
     try{
         const response = await axios.get(url);
         // console.log(response);
