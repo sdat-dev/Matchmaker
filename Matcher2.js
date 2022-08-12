@@ -21,6 +21,7 @@ window.onload = function () {
             var final = [];
             result[lhs] = new Object();
             var max=0;
+            // console.log("DCT now :")
             // console.log(dct)
             // console.log(dictJson)
         
@@ -30,7 +31,7 @@ window.onload = function () {
                 // console.log(value)
                 if(cmnCount>max)
                     max=cmnCount
-                if(cmnCount>3){
+                if(cmnCount>1){
                     var url = "https://spin.infoedglobal.com/Program/Detail/"+opportunity;
                     result[lhs][opportunity] = new Object();
                     result[lhs][opportunity].link = url;
@@ -131,12 +132,22 @@ window.onload = function () {
         }
         
         function intersection(o1, o2) {
-            return Object.keys(o1).filter({}.hasOwnProperty.bind(o2)).length;
+
+            var score = 0;
+            for (const [key, value] of Object.entries(o1)){
+                if(o2.hasOwnProperty(key)){
+                    score += o2[key];
+                }
+            }
+
+            return score;
         }
 
         function tableCreate(data) {
-            var body = document.getElementsByTagName('body')[0];
+            let maincontentContainer = document.getElementsByClassName('main-content')[0];
+            // var body = document.getElementsByTagName('body')[0];
             var tbl = document.createElement('table');
+            tbl.className = "table table-hover table-bordered";
             tbl.style.width = '100%';
             tbl.setAttribute('border', '1');
             var tbdy = document.createElement('tbody');
@@ -160,7 +171,7 @@ window.onload = function () {
                 tbdy.appendChild(tr);
             }
             tbl.appendChild(tbdy);
-            body.appendChild(tbl)
+            maincontentContainer.appendChild(tbl)
         }
         
         let btn = document.getElementById("btn");
