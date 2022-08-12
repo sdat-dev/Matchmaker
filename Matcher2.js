@@ -21,8 +21,8 @@ window.onload = function () {
             var final = [];
             result[lhs] = new Object();
             var max=0;
-            // console.log("DCT now :")
-            // console.log(dct)
+            console.log("DCT now :")
+            console.log(dct)
             // console.log(dictJson)
         
             for (var opportunity in dictJson) {
@@ -36,7 +36,7 @@ window.onload = function () {
                     result[lhs][opportunity] = new Object();
                     result[lhs][opportunity].link = url;
                     result[lhs][opportunity].cmnCount = cmnCount;
-                    console.log(url, " : ",cmnCount);
+                    // console.log(url, " : ",cmnCount);
                     arr.push(result[lhs][opportunity]);
                 }
             }
