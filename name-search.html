@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="MobileOptimized" content="width" />
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="https://www.albany.edu/sites/default/files/favicon_0.ico"
+        type="image/vnd.microsoft.icon">
+    <title>Matchmaker | University at Albany</title>
+    <link rel="stylesheet" href="https://sdat-dev.github.io/resources/healthequity/themes/bootstrap/css/bootstrap.min.css" />   <!--Functionality-->
+    <link rel="stylesheet" media="all" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />        <!--Accordian functionality-->
+    <link rel="stylesheet" media="all" href="https://sdat-dev.github.io/resources/libraries/css/ualbany/css_HGX-k5WjVd363YMi3gQopTOOpp5Kgp6wjKjySmE1uJI.css"/>      <!--Fonts and down/up arrow-->
+    <link rel="stylesheet" href="https://sdat-dev.github.io/resources/wecliemprep/themes/custom-fonts.css" />       <!--Fonts-->
+    <link rel="stylesheet" href="https://sdat-dev.github.io/resources/wecliemprep/themes/fundingopportunity.css" />  <!--Divider between solicitations-->
+    <link rel="stylesheet" href="https://sdat-dev.github.io/resources/wecliemprep/themes/accordion-transparent-theme.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <header>
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+            <div class="container-fluid">
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-mdb-toggle="collapse"
+                    data-mdb-target="#navbarExample01"
+                    aria-controls="navbarExample01"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <i class="fas fa-bars">
+                    </i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarExample01">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/home.html">Search by text</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" aria-current="page" href="/name-search.html">Search by name</a>
+                        </li>
+                        <!-- <li class="nav-item">
+                            <a class="nav-link" href="#">Test</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Test</a> -->
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Navbar -->
+      
+        <!-- Jumbotron -->
+        <div class="p-5 text-center bg-light" style="margin-top: 58px;">
+            <h1 class="mb-3">UAlbany Matchmaker</h1>
+            <h4 class="mb-3">Enter name below to search :</h4>
+            <!-- <form name="Name" id="Name">
+                <textarea cols="100" type="text" name="Description" id="Description" size="100" maxlength="1000000" style="border: 1px solid #B9B9B9; height: 200px;"></textarea>
+                <input class="btn btn-primary btn-lg active" type="button" value="Submit" name="submit" id="btn">
+            </form> -->
+            <form class="col-lg-6 offset-lg-3">
+                <div class="row justify-content-center">
+                    <label for="FirstName" class="sr-only">First Name</label>
+                    <input type="text" class="form-control" id="fName" placeholder="First Name" size="100" maxlength="1000000" style="border: 1px solid #B9B9B9; height: 50px;">
+                </div>
+                <div class="row justify-content-center">
+                    <label for="LastName" class="sr-only">Last Name</label>
+                    <input type="text" class="form-control" id="lName" placeholder="Last Name" size="100" maxlength="1000000" style="border: 1px solid #B9B9B9; height: 50px;">
+                </div>
+            </form>
+            <input class="btn btn-primary btn-lg active" type="button" value="Submit" name="submit" id="btnName">
+            <button class="btn btn-primary btn-lg reset" value="Reset" name="reset" type="reset" onclick="window.location.reload();">Reset</button>
+
+            <br><br><br><br>
+            <div id = "fundingopps">
+            </div>
+
+        </div>
+        <!-- Jumbotron -->
+    </header>
+    <section class="content-wrapper">
+        <div class="buffer">
+            <div class="content-tool-bar">
+                
+            </div>
+        </div>
+        <div class="display-flex">
+            <div class="main-content col-xs-12 col-sm-9" style="line-height: 1.45;">
+                <h1 class="content-header">
+                </h1>
+                <div class="content">
+                    <!-- <form name="Name" id="Name">
+                        Paste the text below:
+                        <textarea cols="100" type="text" name="Description" id="Description" size="100" maxlength="1000000" style="border: 1px solid #B9B9B9; height: 200px;"></textarea>
+                        <input class="btn btn-primary btn-lg active" type="button" value="Submit" name="submit" id="btn">
+                        <button class="btn btn-primary btn-lg reset" value="Reset" name="reset" type="reset" onclick="window.location.reload();">Reset</button>
+                    </form> -->
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="https://sdat-dev.github.io/resources/libraries/js/jquery/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.js" integrity="sha256-29KjXnLtx9a95INIGpEvHDiqV/qydH2bBx0xcznuA6I=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/fundingopportunity.js"></script>
+    <script src="dist/Matcher3.js"></script>
+</body>
+</html>

@@ -25,7 +25,7 @@ window.onload = function () {
         let mySet = new Set();
         var result = new Object();
         var arr = []
-        
+
         function checkSimilarity(lhs) {
             var dct = getScoreFromText(lhs);
             var final = [];
@@ -289,6 +289,14 @@ window.onload = function () {
             let Description = document.getElementById("Description").value;
             // alert(Description);
             checkSimilarity(Description);
+        });
+
+        let btnName = document.getElementById("btnName");
+        btn.addEventListener('click', event => {
+            let firstName = document.getElementById("fName").value;
+            let lastName = document.getElementById("lName").value;
+            // alert(Description);
+            checkSimilarityWithName(firstName,lastName);
         });
 
         // result[text] = checkSimilarity(text,dictJson)

@@ -1,0 +1,60 @@
+// 'use strict'
+const fs = require('fs');
+const { convert } = require('html-to-text');
+const axios = require("axios");
+const cheerio = require("cheerio");
+var path = require('path');
+// let dir = path.dirname(path.dirname(__dirname));
+let dir = 'C:/Users/sg797751/Desktop/GIt';
+let file_relative_path = path.join('University at Albany - SUNY','Script Repository - Documents','JSON.json');
+let file_abs_path = path.join(dir, file_relative_path);
+let file = fs.readFileSync(file_abs_path);
+
+let rawdata = JSON.parse(file);
+let Programs = rawdata.Programs;
+let data = [];
+
+async function main(){
+    for(let iter of Programs){
+        let Solicitation = await mapSolicitation(iter);
+        data.push(Solicitation);
+    }
+    fs.writeFileSync(path.join(directory, 'data.json'),JSON.stringify(data));
+}
+
+async function mapSolicitation(entry){
+    let solicitation = {};
+    // solicitation["synopsis"] = entry.hasOwnProperty("synopsis")? convert(entry.synopsis, { wordwrap: null  }) : "";
+    solicitation["synopsis"] = entry.hasOwnProperty("objective")? convert(entry.objective, { wordwrap: null  }) : "";
+    solicitation["id"] = entry.hasOwnProperty("id")? entry.id : "";
+    solicitation["programurl"] = entry.hasOwnProperty("programurl")? entry.programurl : "";
+    solicitation["prog_title"] = entry.hasOwnProperty("prog_title")? entry.prog_title : "";
+    solicitation["total_funding_limit"] = entry.hasOwnProperty("total_funding_limit")? entry.total_funding_limit : "";
+    if(solicitation.programurl != null){
+        let abc = await textScrape(solicitation.programurl);
+        solicitation["url_mining"] = abc;
+    }
+    return solicitation;
+}
+
+async function textScrape(url){
+    // console.log(url);
+    try{
+        const response = await axios.get(url);
+        // console.log(response);
+        const $= await cheerio.load(response.data);
+        const data = await $("p").text();
+        // console.log("1 " +data);
+        if(data){
+            // console.log("3 "+ data);
+            return data;
+        }
+    }
+    catch(error){
+        console.error(error.data);
+        console.error(error.message);
+        // console.error(error);
+    }
+}
+
+main();
