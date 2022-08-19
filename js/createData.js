@@ -1,4 +1,4 @@
-// 'use strict'
+// 'use strict'  Used for creating dir/data.json file
 const fs = require('fs');
 const { convert } = require('html-to-text');
 const axios = require("axios");
@@ -7,6 +7,7 @@ var path = require('path');
 // let dir = path.dirname(path.dirname(__dirname));
 let dir = 'C:/Users/sg797751/Desktop/GIt';
 let file_relative_path = path.join('University at Albany - SUNY','Script Repository - Documents','JSON.json');
+var directory = 'C:/Users/sg797751/Desktop/GIt/Matchmaker/dir';
 let file_abs_path = path.join(dir, file_relative_path);
 let file = fs.readFileSync(file_abs_path);
 
@@ -24,12 +25,14 @@ async function main(){
 
 async function mapSolicitation(entry){
     let solicitation = {};
+    let temp = entry.hasOwnProperty("objective")? convert(entry.objective, { wordwrap: null  }) : "" + " " + entry.hasOwnProperty("synopsis")? convert(entry.synopsis, { wordwrap: null  }) : "";
     // solicitation["synopsis"] = entry.hasOwnProperty("synopsis")? convert(entry.synopsis, { wordwrap: null  }) : "";
-    solicitation["synopsis"] = entry.hasOwnProperty("objective")? convert(entry.objective, { wordwrap: null  }) : "";
+    solicitation["synopsis"] = temp;
     solicitation["id"] = entry.hasOwnProperty("id")? entry.id : "";
     solicitation["programurl"] = entry.hasOwnProperty("programurl")? entry.programurl : "";
     solicitation["prog_title"] = entry.hasOwnProperty("prog_title")? entry.prog_title : "";
     solicitation["total_funding_limit"] = entry.hasOwnProperty("total_funding_limit")? entry.total_funding_limit : "";
+    solicitation["keyword"] = entry.hasOwnProperty("keyword")? entry.keyword : [];
     if(solicitation.programurl != null){
         let abc = await textScrape(solicitation.programurl);
         solicitation["url_mining"] = abc;

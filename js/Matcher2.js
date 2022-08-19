@@ -12,11 +12,20 @@ window.onload = function () {
     console.log("Hey!")
     fundingop();
     let datarequestURL = "dir/dict.json";
+    let tree3File = axios.get("JSONs/tree3.json");
+    let tree2File = axios.get("JSONs/tree2.json");
+    let tree1File = axios.get("JSONs/tree1.json");
+    let keyIdArrFile = axios.get("JSONs/keyIdArr.json");
+    let PI_Data_MapFile = axios.get("JSONs/PI_Data_Map.json")
     let datarequest = axios.get(datarequestURL);
 
-    axios.all([datarequest]).then(axios.spread((...responses) => {
+    axios.all([datarequest,tree3File,tree2File,tree1File,keyIdArrFile,PI_Data_MapFile]).then(axios.spread((...responses) => {
         let dictJson = responses[0].data;
-        
+        let tree3 = responses[1].data;
+        let tree2 = responses[2].data;
+        let tree1 = responses[3].data;
+        let idMapper = responses[4].data;
+        let PI_Data_Map = responses[5].data;
             
         const { convert } = require('html-to-text');
         const natural = require('natural/lib/natural/tfidf');
@@ -25,6 +34,65 @@ window.onload = function () {
         let mySet = new Set();
         var result = new Object();
         var arr = []
+        let scoreDict = {};
+
+        const findKeywords = (content) => {
+            for (const [key, val] of Object.entries(tree3)) {
+                if (content.includes(key.toLowerCase())) {
+                    // console.log(key);
+                    for (let id of idMapper[key]) {
+                        scoreDict[id] = 4;
+                        // console.log(id);
+                    }
+                    // console.log(idMapper[key].length);
+                    //TODO logic for scoring and matching spin content for cousins
+                    console.log(val, "value");
+                    for (let keywrd of tree2[val]) { //for all children of level 2
+                        if (idMapper[keywrd] && keywrd != key) {
+                            // console.log(keywrd,"--",idMapper[keywrd]);
+                            for (let spin_id of idMapper[keywrd]) {
+                                if (!scoreDict[spin_id]) {
+                                    // console.log(spin_id);
+                                    scoreDict[spin_id] = 3;
+                                }
+                            }
+                        }
+                    }
+        
+                    //for all children of level 1 of same category ----------
+                    for (let [l1key, l1val] of Object.entries(tree1)) {
+                        if (l1val.includes(val)) {
+                            // console.log(l1key);
+                            for (let keyterm of l1val) {
+                                if (keyterm != val) {
+                                    console.log(keyterm);
+                                    //map ids start ------
+                                    if(tree2[keyterm]){
+                                    for (let keywrd of tree2[keyterm]) { //go through  children of level 2
+                                        if (idMapper[keywrd] && keywrd != key) {
+                                            // console.log(keywrd,"--",idMapper[keywrd]);
+                                            for (let spin_id of idMapper[keywrd]) { //get ids for each c3 keyword
+                                                if (!scoreDict[spin_id]) {
+                                                    // console.log(spin_id);
+                                                    scoreDict[spin_id] = 2;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+        
+                                    //ends -----------
+                                }
+                            }
+                        }
+                    }
+        
+                }
+            }
+            //some change
+            // console.log(scoreDict);
+            return scoreDict;
+        }
 
         function checkSimilarity(lhs) {
             var dct = getScoreFromText(lhs);
@@ -62,6 +130,17 @@ window.onload = function () {
                 console.log("The following abstracts found-->\n", final)
                 tableCreate(final);
             }
+        }
+
+        function checkSimilarity2Param(lhs, rhs) {
+            let result = {};
+            var dct = getScoreFromText(lhs);
+            for (let opportunity in rhs) {
+                let value = rhs[opportunity];
+                let score = intersection(dct, value);
+                result[opportunity] = score;
+            }
+            return result;
         }
 
         function getResultData(jsonData,solicitations){
@@ -232,14 +311,12 @@ window.onload = function () {
         }
         
         function intersection(o1, o2) {
-
-            var score = 0;
-            for (const [key, value] of Object.entries(o1)){
-                if(o2.hasOwnProperty(key)){
-                    score += o2[key];
+            let score = 0;
+            for (const [key, value] of Object.entries(o1)) {
+                if (o2.hasOwnProperty(key)) {
+                    score += parseFloat(o2[key]);
                 }
             }
-
             return score;
         }
 
@@ -288,11 +365,32 @@ window.onload = function () {
         btn.addEventListener('click', event => {
             let Description = document.getElementById("Description").value;
             // alert(Description);
-            checkSimilarity(Description);
+            let scoreWithMultiplier = findKeywords(Description.toLowerCase());
+            let idsWithScore = {};
+            let sortArray = [];         //Will contain all SPIN IDs with tf-idf scores in decr order
+            for ([key] of Object.entries(scoreWithMultiplier)) {
+                idsWithScore[key] = dictJson[key];
+            }
+            let similarResult = checkSimilarity2Param(Description, dictJson); //pass all ids for similarity check (initially: idsWithScore)
+            // console.log(similarResult, "before-----");
+            for (let [key, val] of Object.entries(similarResult)) {
+                if(key in scoreDict){
+                    similarResult[key] = val * scoreDict[key];
+                }  
+            }
+            for (let [key, val] of Object.entries(similarResult)) {
+                let tobj = { id: key, score: val }
+                // tobj[key]={score:val};
+                sortArray.push(tobj);
+            }
+            sortArray.sort((a, b) => b.score - a.score);
+            final = sortArray.slice(0, 5)
+            console.log("The following abstracts found-->\n", final)
+            tableCreate(final);
         });
 
         let btnName = document.getElementById("btnName");
-        btn.addEventListener('click', event => {
+        btnName.addEventListener('click', event => {
             let firstName = document.getElementById("fName").value;
             let lastName = document.getElementById("lName").value;
             // alert(Description);

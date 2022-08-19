@@ -1,8 +1,8 @@
 // 'use strict'
 const fs = require('fs');
 var path = require('path');
-var directory = 'C:/Users/sg797751/Desktop/GIt/Matchmaker';
-let file_abs_path = path.join(directory, 'abc.json');
+var directory = 'C:/Users/sg797751/Desktop/GIt/Matchmaker/JSONs';
+let file_abs_path = path.join(directory, 'OriginalSPIN_keys.json');     //Get the file from https://spin.infoedglobal.com/Keywords/MillerList
 let file = fs.readFileSync(file_abs_path);
 
 let data = JSON.parse(file);
@@ -75,4 +75,6 @@ for(const [key, value] of Object.entries(l3)){
     l3newdata[temp].level2 = l3[key].text_level2;
     l3newdata[temp].level1 = l3[key].text_level1;
 }
-console.log(JSON.stringify(l3newdata));
+
+let writePath = path.join(directory, 'SPIN_Keywords.json');
+fs.writeFileSync(writePath,JSON.stringify(l3newdata));

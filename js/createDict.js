@@ -1,13 +1,12 @@
-// 'use strict'
+// 'use strict'         Creates the dictionary of top 50 words against each opportunity
 const fs = require('fs');
 const { convert } = require('html-to-text');
-let dictJson = JSON.parse(fs.readFileSync('dir/dict.json'));
 var path = require('path');
 const natural = require('natural')
 const TfIdf = natural.TfIdf;
 var directory = 'C:/Users/sg797751/Desktop/GIt/Matchmaker/dir';
 var dict = new Object();
-let file_abs_path = path.join(directory, 'data.json');
+let file_abs_path = path.join(directory, 'data.json');              //File containing all the data from SPIN with URL mining
 let file = fs.readFileSync(file_abs_path);
 let mySet = new Set();
 var noOfKeywords = 50;
@@ -123,9 +122,9 @@ function populateSet() {
     mySet.add("proposals");
     mySet.add("dm");
     mySet.add("programs");
-    mySet.add("programs");
-    mySet.add("programs");
-    mySet.add("programs");
+    mySet.add("cf");
+    mySet.add("org");
+    mySet.add("cftr");
 }
 
 main();
