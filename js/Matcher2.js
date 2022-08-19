@@ -25,19 +25,7 @@ window.onload = function () {
         let mySet = new Set();
         var result = new Object();
         var arr = []
-
-        var parseData = function (p) {
-            data = p;
-            // if (p.ErrorType != null) {
-            //     if ($('#waiter').is(':visible')) $('#waiter').hide();
-            //     alert(p.ErrorType + '\n' + p.ErrorMessage);
-            //     return;
-            // }
-            
-            if(getAccordiationData(p))
-                $('#waiter').hide();
-        };  
-
+        
         function checkSimilarity(lhs) {
             var dct = getScoreFromText(lhs);
             var final = [];
