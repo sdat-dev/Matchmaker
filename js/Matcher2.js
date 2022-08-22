@@ -132,6 +132,19 @@ window.onload = function () {
             }
         }
 
+        function checkSimilarityWithName(fName,lName) {
+            let fullName = lName + ", " + fName;
+            PI_data = PI_Data_Map[fullName].content;
+            var dct = getScoreFromText(PI_data);
+            let result = {};
+            for (let opportunity in dictJson) {
+                let value = dictJson[opportunity];
+                let score = intersection(dct, value);
+                result[opportunity] = score;
+            }
+            return result;
+        }
+
         function checkSimilarity2Param(lhs, rhs) {
             let result = {};
             var dct = getScoreFromText(lhs);
@@ -362,41 +375,60 @@ window.onload = function () {
         }
         
         let btn = document.getElementById("btn");
-        btn.addEventListener('click', event => {
-            let Description = document.getElementById("Description").value;
-            // alert(Description);
-            let scoreWithMultiplier = findKeywords(Description.toLowerCase());
-            let idsWithScore = {};
-            let sortArray = [];         //Will contain all SPIN IDs with tf-idf scores in decr order
-            for ([key] of Object.entries(scoreWithMultiplier)) {
-                idsWithScore[key] = dictJson[key];
-            }
-            let similarResult = checkSimilarity2Param(Description, dictJson); //pass all ids for similarity check (initially: idsWithScore)
-            // console.log(similarResult, "before-----");
-            for (let [key, val] of Object.entries(similarResult)) {
-                if(key in scoreDict){
-                    similarResult[key] = val * scoreDict[key];
-                }  
-            }
-            for (let [key, val] of Object.entries(similarResult)) {
-                let tobj = { id: key, score: val }
-                // tobj[key]={score:val};
-                sortArray.push(tobj);
-            }
-            sortArray.sort((a, b) => b.score - a.score);
-            final = sortArray.slice(0, 5)
-            console.log("The following abstracts found-->\n", final)
-            tableCreate(final);
-        });
-
+        if(btn){
+            btn.addEventListener('click', event => {
+                let Description = document.getElementById("Description").value;
+                // alert(Description);
+                let scoreWithMultiplier = findKeywords(Description.toLowerCase());
+                let idsWithScore = {};
+                let sortArray = [];         //Will contain all SPIN IDs with tf-idf scores in decr order
+                for ([key] of Object.entries(scoreWithMultiplier)) {
+                    idsWithScore[key] = dictJson[key];
+                }
+                let similarResult = checkSimilarity2Param(Description, dictJson); //pass all ids for similarity check (initially: idsWithScore)
+                // console.log(similarResult, "before-----");
+                for (let [key, val] of Object.entries(similarResult)) {
+                    if(key in scoreDict){
+                        similarResult[key] = val * scoreDict[key];
+                    }  
+                }
+                for (let [key, val] of Object.entries(similarResult)) {
+                    let tobj = { id: key, score: val }
+                    // tobj[key]={score:val};
+                    sortArray.push(tobj);
+                }
+                sortArray.sort((a, b) => b.score - a.score);
+                final = sortArray.slice(0, 5)
+                console.log("The following abstracts found-->\n", final)
+                tableCreate(final);
+            });
+        }
+        
         let btnName = document.getElementById("btnName");
-        btnName.addEventListener('click', event => {
-            let firstName = document.getElementById("fName").value;
-            let lastName = document.getElementById("lName").value;
-            // alert(Description);
-            checkSimilarityWithName(firstName,lastName);
-        });
-
+        if(btnName){
+            btnName.addEventListener('click', event => {
+                let firstName = document.getElementById("fName").value;
+                let lastName = document.getElementById("lName").value;
+                let sortArray = [];   
+                // alert(Description);
+                let similarResult = checkSimilarityWithName(firstName,lastName);
+                for (let [key, val] of Object.entries(similarResult)) {
+                    if(key in scoreDict){
+                        similarResult[key] = val * scoreDict[key];
+                    }  
+                }
+                for (let [key, val] of Object.entries(similarResult)) {
+                    let tobj = { id: key, score: val }
+                    // tobj[key]={score:val};
+                    sortArray.push(tobj);
+                }
+                sortArray.sort((a, b) => b.score - a.score);
+                final = sortArray.slice(0, 5)
+                console.log("The following abstracts found-->\n", final)
+                tableCreate(final);
+            });
+        }
+        
         // result[text] = checkSimilarity(text,dictJson)
         populateSet(mySet);
         // var text = "The purpose of this Funding Opportunity Announcement (FOA) is to support studies to investigate mechanisms by which the gut microbiome and gut immune system modulates the brain functions, circuits, neurotransmitters, signaling pathways and synaptic plasticity in the context of HIV and Anti-retroviral therapy. Exploratory and high-risk research projects are encouraged. Basic, preclinical, and clinical (e.g., pathophysiology or mechanisms) research in domestic and international settings are of interest. No clinical trials will be accepted for this FOA. Multidisciplinary research teams and collaborative alliances are encouraged but not required. In the United States and globally, Central Nervous System (CNS) comorbidities associated with HIV including neurologic, neurocognitive, and mental health problems continue to persist in people living with HIV (PWH) despite effective antiretroviral therapy (ART). Considerable gaps exist in the understanding of CNS comorbidities associated with HIV in the context of ART. Recent studies have shown gut microbiota and gut immune system can alter brain development, neurotransmitter systems, signaling pathways, synaptic related proteins, and modulate behavior. From early stages of infection, HIV alters the gut immune system and the gut microbiome (dysbiosis) resulting in immune dysfunction as well as higher levels of systemic inflammation. ART does not completely reverse the impact of HIV on the gut immune system and the microbiome. To date there is a paucity of studies looking at unique pathways and mechanisms of gut microbiome and gut-related immune dysregulation impacting CNS-related outcomes in PWH. An enhanced understanding of mechanisms underlying gut microbiome-immune-CNS interactions may provide novel insights into CNS comorbidities observed in PWH.";
