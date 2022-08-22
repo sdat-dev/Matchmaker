@@ -128,7 +128,7 @@ window.onload = function () {
                 arr.sort((a, b) => {
                     return b.cmnCount - a.cmnCount;
                 });
-                final = arr.slice(0, 5)
+                final = arr.slice(0, 20)
                 console.log("The following abstracts found-->\n", final)
                 tableCreate(final);
             }
@@ -406,7 +406,7 @@ window.onload = function () {
                     sortArray.push(tobj);
                 }
                 sortArray.sort((a, b) => b.score - a.score);
-                final = sortArray.slice(0, 5)
+                final = sortArray.slice(0, 20)
                 console.log("The following abstracts found-->\n", final)
                 tableCreate(final);
             });
@@ -432,7 +432,7 @@ window.onload = function () {
                         sortArray.push(tobj);
                     }
                     sortArray.sort((a, b) => b.score - a.score);
-                    final = sortArray.slice(0, 5)
+                    final = sortArray.slice(0, 20)
                     console.log("The following abstracts found-->\n", final)
                     tableCreate(final);
                 }
