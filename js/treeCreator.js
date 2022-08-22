@@ -1,8 +1,15 @@
 
 const fs = require('fs');
 var path = require('path');
-var directory = 'C:/Users/sg797751/Desktop/GIt/Matchmaker/JSONs';
-const file = fs.readFileSync(path.join(directory,'SPIN_Keywords.json'));
+const { paths } = require("./paths.js");
+// var directory = 'C:/Users/sg797751/Desktop/GIt/Matchmaker/JSONs';
+
+const SPIN_KeywordsFile = paths.SPIN_Keywords;
+const tree1File = paths.tree1;
+const tree2File = paths.tree2;
+const tree3File = paths.tree3;
+
+const file = fs.readFileSync(SPIN_KeywordsFile);
 const keywords = JSON.parse(file);
 
 // console.log(keys);
@@ -68,7 +75,7 @@ for(let [k,v] of Object.entries(level1_2)){
 }
 // console.log(level1_2);
 
-fs.writeFileSync('C:/Users/sg797751/Desktop/GIt/Matchmaker/JSONs/tree3.json',JSON.stringify(level3_lvl2));
-fs.writeFileSync('C:/Users/sg797751/Desktop/GIt/Matchmaker/JSONs/tree2.json',JSON.stringify(level2_3arr));
-fs.writeFileSync('C:/Users/sg797751/Desktop/GIt/Matchmaker/JSONs/tree1.json',JSON.stringify(level1_2));
+fs.writeFileSync(tree3File,JSON.stringify(level3_lvl2));
+fs.writeFileSync(tree2File,JSON.stringify(level2_3arr));
+fs.writeFileSync(tree1File,JSON.stringify(level1_2));
 

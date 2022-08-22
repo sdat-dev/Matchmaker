@@ -3,11 +3,17 @@ const fs = require('fs');
 const { convert } = require('html-to-text');
 var path = require('path');
 const natural = require('natural')
+const { paths } = require("./paths.js");
 const TfIdf = natural.TfIdf;
-var directory = 'C:/Users/sg797751/Desktop/GIt/Matchmaker/dir';
+// var directory = 'C:/Users/sg797751/Desktop/GIt/Matchmaker/dir';
 var dict = new Object();
-let file_abs_path = path.join(directory, 'data.json');              //File containing all the data from SPIN with URL mining
-let file = fs.readFileSync(file_abs_path);
+// let file_abs_path = path.join(directory, 'data.json');              //File containing all the data from SPIN with URL mining
+
+const dataFile = paths.data;
+const dictFile = paths.dict;
+const overallFile = paths.overall;
+
+let file = fs.readFileSync(dataFile);
 let mySet = new Set();
 var noOfKeywords = 50;
 
@@ -22,7 +28,7 @@ async function main(){
     }
     
     // Uncomment below
-    fs.writeFileSync(path.join(directory, 'dict.json'),JSON.stringify(dict));
+    fs.writeFileSync(dictFile,JSON.stringify(dict));
     // console.log(dict);
     // mostUsedWords(dict);
 
@@ -67,7 +73,7 @@ function mostUsedWords(dict) {      //Pass a dictionary Object containing dictio
             delete muw[key];
         }
     }
-    fs.writeFileSync(path.join(directory, 'overall.json'),JSON.stringify(muw));
+    fs.writeFileSync(overallFile,JSON.stringify(muw));
 }
 
 function populateSet() {

@@ -2,8 +2,9 @@
 const fs = require('fs')
 const pdfParse = require('pdf-parse');
 var reader = require('any-text');
+const { paths } = require("./paths.js");
 // const { nextTick } = require('process');
-
+const PI_Data_MapFile = paths.PI_Data_Map;
 
 function getFiles(dir, files_) {
     try {
@@ -147,7 +148,7 @@ const saveRdata = async () => {
 main = async () => {
     await saveRdata();
     // console.log(totalData);
-    fs.writeFile('C:/Users/sg797751/Desktop/GIt/Matchmaker/JSONs/PI_Data_Map.json', JSON.stringify(obj), (err) => {
+    fs.writeFile(PI_Data_MapFile, JSON.stringify(obj), (err) => {
         if (err) throw err;
     });
 

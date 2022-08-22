@@ -4,12 +4,17 @@ const { convert } = require('html-to-text');
 const axios = require("axios");
 const cheerio = require("cheerio");
 var path = require('path');
+const { paths } = require("./paths.js");
 // let dir = path.dirname(path.dirname(__dirname));
-let dir = 'C:/Users/sg797751/Desktop/GIt';
-let file_relative_path = path.join('University at Albany - SUNY','Script Repository - Documents','JSON.json');
+// let dir = 'C:/Users/sg797751/Desktop/GIt';
+// let file_relative_path = path.join('University at Albany - SUNY','Script Repository - Documents','JSON.json');
 var directory = 'C:/Users/sg797751/Desktop/GIt/Matchmaker/dir';
-let file_abs_path = path.join(dir, file_relative_path);
-let file = fs.readFileSync(file_abs_path);
+// let file_abs_path = path.join(dir, file_relative_path);
+
+const dataFile = paths.data;
+const JSONFile = paths.JSON;
+
+let file = fs.readFileSync(JSONFile);
 
 let rawdata = JSON.parse(file);
 let Programs = rawdata.Programs;
@@ -20,7 +25,7 @@ async function main(){
         let Solicitation = await mapSolicitation(iter);
         data.push(Solicitation);
     }
-    fs.writeFileSync(path.join(directory, 'data.json'),JSON.stringify(data));
+    fs.writeFileSync(dataFile,JSON.stringify(data));
 }
 
 async function mapSolicitation(entry){
