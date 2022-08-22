@@ -133,16 +133,22 @@ window.onload = function () {
         }
 
         function checkSimilarityWithName(fName,lName) {
-            let fullName = lName + ", " + fName;
-            PI_data = PI_Data_Map[fullName].content;
-            var dct = getScoreFromText(PI_data);
-            let result = {};
-            for (let opportunity in dictJson) {
-                let value = dictJson[opportunity];
-                let score = intersection(dct, value);
-                result[opportunity] = score;
+            let fullName = lName.toLowerCase() + ", " + fName.toLowerCase();
+            if(PI_Data_Map.hasOwnProperty(fullName)){
+                PI_data = PI_Data_Map[fullName].content;
+                var dct = getScoreFromText(PI_data);
+                let result = {};
+                for (let opportunity in dictJson) {
+                    let value = dictJson[opportunity];
+                    let score = intersection(dct, value);
+                    result[opportunity] = score;
+                    return result;
+                }
             }
-            return result;
+            else{
+                return null;
+            }
+            
         }
 
         function checkSimilarity2Param(lhs, rhs) {
@@ -412,20 +418,25 @@ window.onload = function () {
                 let sortArray = [];   
                 // alert(Description);
                 let similarResult = checkSimilarityWithName(firstName,lastName);
-                for (let [key, val] of Object.entries(similarResult)) {
-                    if(key in scoreDict){
-                        similarResult[key] = val * scoreDict[key];
-                    }  
+                if(similarResult!=null){
+                    for (let [key, val] of Object.entries(similarResult)) {
+                        if(key in scoreDict){
+                            similarResult[key] = val * scoreDict[key];
+                        }  
+                    }
+                    for (let [key, val] of Object.entries(similarResult)) {
+                        let tobj = { id: key, score: val }
+                        // tobj[key]={score:val};
+                        sortArray.push(tobj);
+                    }
+                    sortArray.sort((a, b) => b.score - a.score);
+                    final = sortArray.slice(0, 5)
+                    console.log("The following abstracts found-->\n", final)
+                    tableCreate(final);
                 }
-                for (let [key, val] of Object.entries(similarResult)) {
-                    let tobj = { id: key, score: val }
-                    // tobj[key]={score:val};
-                    sortArray.push(tobj);
+                else{
+                    alert("Data for the provided researcher name not found!")
                 }
-                sortArray.sort((a, b) => b.score - a.score);
-                final = sortArray.slice(0, 5)
-                console.log("The following abstracts found-->\n", final)
-                tableCreate(final);
             });
         }
         
