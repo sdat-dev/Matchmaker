@@ -144,8 +144,8 @@ window.onload = function () {
                     let value = dictJson[opportunity];
                     let score = intersection(dct, value);
                     result[opportunity] = score;
-                    return result;
                 }
+                return result;
             }
             else{
                 return null;
