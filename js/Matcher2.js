@@ -38,10 +38,12 @@ window.onload = function () {
 
         const findKeywords = (content) => {
             for (const [key, val] of Object.entries(tree3)) {
-                if (content.includes(key.toLowerCase())) {
+                if (key.toLowerCase().includes(content)) {
                     // console.log(key);
+                    let similaritems
+                    
                     for (let id of idMapper[key]) {
-                        scoreDict[id] = 4;
+                        scoreDict[id] = 8;
                         // console.log(id);
                     }
                     // console.log(idMapper[key].length);
@@ -53,7 +55,7 @@ window.onload = function () {
                             for (let spin_id of idMapper[keywrd]) {
                                 if (!scoreDict[spin_id]) {
                                     // console.log(spin_id);
-                                    scoreDict[spin_id] = 3;
+                                    scoreDict[spin_id] = 2;
                                 }
                             }
                         }
@@ -74,7 +76,7 @@ window.onload = function () {
                                             for (let spin_id of idMapper[keywrd]) { //get ids for each c3 keyword
                                                 if (!scoreDict[spin_id]) {
                                                     // console.log(spin_id);
-                                                    scoreDict[spin_id] = 2;
+                                                    scoreDict[spin_id] = 1;
                                                 }
                                             }
                                         }
