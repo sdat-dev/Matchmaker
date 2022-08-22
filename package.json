@@ -9,12 +9,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "any-text": "^1.2.0",
     "browserify": "^17.0.0",
     "cheerio": "^1.0.0-rc.12",
     "cors": "^2.8.5",
     "html-to-text": "^8.2.0",
     "natural": "^5.2.2",
     "openai": "^3.0.0",
+    "pdf-parse": "^1.1.1",
     "tf-idf": "^1.0.0"
   }
 }

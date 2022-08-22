@@ -76,7 +76,7 @@ const buildData = (schoolName, profName, content) => {
     content = content.replace(/\n|\t|\u001f|__/g, '');
 
     researchDetails.schoolAndColleges = schoolName;
-    researchDetails.profName = profName;
+    researchDetails.profName = profName.toLowerCase();
     researchDetails.content = content;
     totalData.push(researchDetails);
 
