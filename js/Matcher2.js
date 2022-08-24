@@ -37,18 +37,26 @@ window.onload = function () {
         let scoreDict = {};
 
         const findKeywords = (content) => {
+       
             for (const [key, val] of Object.entries(tree3)) {
-                if (key.toLowerCase().includes(content)) {
-                    // console.log(key);
-                    let similaritems
-                    
+                if (content.includes(key.toLowerCase())) {
+                    // console.log(key,"-----key",val,'--val');
+                    if(idMapper[key]){
+                      // console.log(key,'---keyyyy');
                     for (let id of idMapper[key]) {
+                     
+                      if(id in scoreDict){
+                        scoreDict[id]+= 8;
+                      }
+                      else{
                         scoreDict[id] = 8;
+                      }
                         // console.log(id);
                     }
+                  
                     // console.log(idMapper[key].length);
                     //TODO logic for scoring and matching spin content for cousins
-                    console.log(val, "value");
+                    console.log(val, "--------------------value");
                     for (let keywrd of tree2[val]) { //for all children of level 2
                         if (idMapper[keywrd] && keywrd != key) {
                             // console.log(keywrd,"--",idMapper[keywrd]);
@@ -88,7 +96,7 @@ window.onload = function () {
                             }
                         }
                     }
-        
+                  }
                 }
             }
             //some change
@@ -395,9 +403,19 @@ window.onload = function () {
                 }
                 let similarResult = checkSimilarity2Param(Description, dictJson); //pass all ids for similarity check (initially: idsWithScore)
                 // console.log(similarResult, "before-----");
+                //score reduction logic
+                // console.log('-----------------');
+                for(const [keys,vals] of Object.entries(similarResult)){
+                    similarResult[keys]= similarResult[keys]/4;
+                }
+                // console.log('---------------');
+
                 for (let [key, val] of Object.entries(similarResult)) {
                     if(key in scoreDict){
-                        similarResult[key] = val * scoreDict[key];
+                        // similarResult[key] = val * scoreDict[key];
+                        if(scoreDict[key]>=8){
+                          similarResult[key]=100+similarResult[key];
+                        }
                     }  
                 }
                 for (let [key, val] of Object.entries(similarResult)) {
@@ -411,6 +429,7 @@ window.onload = function () {
                 tableCreate(final);
             });
         }
+        
         
         let btnName = document.getElementById("btnName");
         if(btnName){
