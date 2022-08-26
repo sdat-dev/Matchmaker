@@ -16,16 +16,20 @@ window.onload = function () {
     let tree2File = axios.get("JSONs/tree2.json");
     let tree1File = axios.get("JSONs/tree1.json");
     let keyIdArrFile = axios.get("JSONs/keyIdArr.json");
-    let PI_Data_MapFile = axios.get("JSONs/PI_Data_Map.json")
+    let PI_Data_MapFile = axios.get("JSONs/PI_Data_Map.json");
+    let PI_Sponsor_MapFile = axios.get("JSONs/PI_Sponsor.json");
+    let ID_Sponsor_MapPath = axios.get("JSONs/ID_Sponsor.json");
     let datarequest = axios.get(datarequestURL);
 
-    axios.all([datarequest,tree3File,tree2File,tree1File,keyIdArrFile,PI_Data_MapFile]).then(axios.spread((...responses) => {
+    axios.all([datarequest,tree3File,tree2File,tree1File,keyIdArrFile,PI_Data_MapFile,PI_Sponsor_MapFile,ID_Sponsor_MapPath]).then(axios.spread((...responses) => {
         let dictJson = responses[0].data;
         let tree3 = responses[1].data;
         let tree2 = responses[2].data;
         let tree1 = responses[3].data;
         let idMapper = responses[4].data;
         let PI_Data_Map = responses[5].data;
+        let PI_Sponsor = responses[6].data;
+        let ID_Sponsor = responses[7].data;
             
         const { convert } = require('html-to-text');
         const natural = require('natural/lib/natural/tfidf');
@@ -394,6 +398,35 @@ window.onload = function () {
                  console.log(errors);
              })
         }
+
+        function SortBySponName(array,name) {
+            let retArray = [];
+            let set = new Set();
+            if(!PI_Sponsor.hasOwnProperty(name)){
+                return array;
+            }else{
+                for(let obj of PI_Sponsor[name]){
+                    console.log(obj);
+                }
+                console.log("--------------\nSponsorNamesOfPI-->\n" + Object.values(PI_Sponsor[name]) + "\n\n\nOp Sponsor with ID-->\n");
+                for(let obj of PI_Sponsor[name]){
+                    for(let op of array){
+                        console.log(ID_Sponsor[op.id]);
+                        if(ID_Sponsor[op.id] == Object.keys(obj)[0]){
+                            console.log(Object.keys(obj)[0]+"   ---Matched---")
+                            retArray.push(op);
+                            set.add(op.id);
+                        }
+                    }
+                }
+                for(let obj of array){
+                    if(!set.has(obj.id)){
+                        retArray.push(obj);
+                    }
+                }
+                return retArray;
+            }
+        }
         
         let btn = document.getElementById("btn");
         if(btn){
@@ -429,7 +462,7 @@ window.onload = function () {
                     sortArray.push(tobj);
                 }
                 sortArray.sort((a, b) => b.score - a.score);
-                final = sortArray.slice(0, 20)
+                final = sortArray.slice(0, 20);
                 console.log("The following abstracts found-->\n", final)
                 tableCreate(final);
             });
@@ -444,17 +477,14 @@ window.onload = function () {
                 let sortArray = [];   
                 // alert(Description);
                 let similarResult = checkSimilarityWithName(firstName,lastName);
-                for(const [keys,vals] of Object.entries(similarResult)){
-                    // console.log(similarResult[keys])
-                    similarResult[keys]= similarResult[keys]/4;
-                }
-
                 if(similarResult!=null){
+                    for(const [keys,vals] of Object.entries(similarResult)){
+                        similarResult[keys]= similarResult[keys]/4;
+                    }
                     for (let [key, val] of Object.entries(similarResult)) {
                         if(key in scoreDict){
                             // similarResult[key] = val * scoreDict[key];
                             if(scoreDict[key]>=8){
-                                console.log(similarResult[key])
                                 similarResult[key]=100+similarResult[key];
                             }
                         }  
@@ -465,7 +495,8 @@ window.onload = function () {
                         sortArray.push(tobj);
                     }
                     sortArray.sort((a, b) => b.score - a.score);
-                    final = sortArray.slice(0, 20)
+                    let fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
+                    final = SortBySponName(sortArray.slice(0, 20),fullName);
                     console.log("The following abstracts found-->\n", final)
                     tableCreate(final);
                 }

@@ -12,6 +12,8 @@ const paths = {
   tree3 : path.join(path.dirname(path.dirname(__dirname)), "Matchmaker","JSONs","tree3.json"),
   keyIdArr : path.join(path.dirname(path.dirname(__dirname)), "Matchmaker","JSONs","keyIdArr.json"),
   PI_Data_Map : path.join(path.dirname(path.dirname(__dirname)), "Matchmaker","JSONs","PI_Data_Map.json"),
-  Proposals_csv : path.join(path.dirname(path.dirname(__dirname)), "Matchmaker","data","Proposals.csv")
+  Proposals_csv : path.join(path.dirname(path.dirname(__dirname)), "Matchmaker","data","Proposals.csv"),
+  sortedPI_SponsorMap : path.join(path.dirname(path.dirname(__dirname)), "Matchmaker","JSONs","PI_Sponsor.json"),
+  ID_SponsorMap : path.join(path.dirname(path.dirname(__dirname)), "Matchmaker","JSONs","ID_Sponsor.json")
 };
 module.exports.paths = paths;

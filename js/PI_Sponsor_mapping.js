@@ -1,10 +1,15 @@
-const exceltojson = require("xls-to-json-lc");
-
 const { paths } = require("./paths.js");
+const fs= require("fs");
 let xlsx = require('node-xlsx');
 let file = xlsx.parse(paths.Proposals_csv);
 // console.log(file[0].data);
-let datapart=(file[0].data)
+let datapart=(file[0].data);
+let sortedPI_SponsorMap = paths.sortedPI_SponsorMap;
+let dataPath = fs.readFileSync(paths.JSON);
+let dataParse = JSON.parse(dataPath);
+let data = dataParse.Programs;
+let ID_SponsorMapPath = paths.ID_SponsorMap;
+var ID_Sponsor = {};
 
 
 function convertToJSON(array) {
@@ -29,7 +34,7 @@ function convertToJSON(array) {
     return jsonData;
   };
 
-  let jsondata=convertToJSON(file[0].data);
+  let jsondata=convertToJSON(datapart);
 //   console.log(jsondata);
 
   let PI_spons_map={};
@@ -50,19 +55,34 @@ function convertToJSON(array) {
       }
   }
 
-  console.log(PI_spons_map);
+  // console.log(PI_spons_map);
 
+  for([key,val] of Object.entries(PI_spons_map)){
+    const sortable = Object.entries(val)
+    .sort(([,a],[,b]) => b-a)
+    .reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
+    PI_spons_map[key] = sortable;
+  }
 
+  // console.log(PI_spons_map);
 
-// exceltojson({
-//     input: paths.Proposals_csv,
-//     sheet: "sheetname",  // specific sheetname inside excel file (if you have multiple sheets)
-//  //to convert all excel headers to lowr case in json
-//   }, function(err, result) {
-//     if(err) {
-//       console.error(err);
-//     } else {
-//       console.log(result);
-//       //result will contain the overted json data
-//     }
-//   });
+  let modified_dict={}
+  for(const [k,v] of Object.entries(PI_spons_map)){
+    let temp=[]
+    for(let [k1,v1] of Object.entries(v)){
+      let obj={}
+      obj[k1.toLowerCase()]=v1;
+      temp.push(obj);
+    }
+    modified_dict[k.toLowerCase()]=temp;
+  }
+
+  fs.writeFileSync(sortedPI_SponsorMap,JSON.stringify(modified_dict));
+  // console.log(modified_dict);
+// console.log(data);
+
+for(let obj of data){
+  ID_Sponsor[obj.id] = obj.spon_name.toLowerCase();
+}
+
+fs.writeFileSync(ID_SponsorMapPath,JSON.stringify(ID_Sponsor));
