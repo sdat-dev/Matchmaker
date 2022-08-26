@@ -144,8 +144,13 @@ window.onload = function () {
 
         function checkSimilarityWithName(fName,lName) {
             let fullName = lName.toLowerCase() + ", " + fName.toLowerCase();
+            let idsWithScore = {};
             if(PI_Data_Map.hasOwnProperty(fullName)){
-                PI_data = PI_Data_Map[fullName].content;
+                let PI_data = PI_Data_Map[fullName].content;
+                let scoreWithMultiplier = findKeywords(PI_data.toLowerCase());
+                for ([key] of Object.entries(scoreWithMultiplier)) {
+                    idsWithScore[key] = dictJson[key];
+                }
                 var dct = getScoreFromText(PI_data);
                 let result = {};
                 for (let opportunity in dictJson) {
@@ -439,10 +444,19 @@ window.onload = function () {
                 let sortArray = [];   
                 // alert(Description);
                 let similarResult = checkSimilarityWithName(firstName,lastName);
+                for(const [keys,vals] of Object.entries(similarResult)){
+                    // console.log(similarResult[keys])
+                    similarResult[keys]= similarResult[keys]/4;
+                }
+
                 if(similarResult!=null){
                     for (let [key, val] of Object.entries(similarResult)) {
                         if(key in scoreDict){
-                            similarResult[key] = val * scoreDict[key];
+                            // similarResult[key] = val * scoreDict[key];
+                            if(scoreDict[key]>=8){
+                                console.log(similarResult[key])
+                                similarResult[key]=100+similarResult[key];
+                            }
                         }  
                     }
                     for (let [key, val] of Object.entries(similarResult)) {
