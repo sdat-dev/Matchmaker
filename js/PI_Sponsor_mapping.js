@@ -9,8 +9,9 @@ let dataPath = fs.readFileSync(paths.JSON);
 let dataParse = JSON.parse(dataPath);
 let data = dataParse.Programs;
 let ID_SponsorMapPath = paths.ID_SponsorMap;
+let PI_ProjectTitlePath=paths.PI_ProjectTitleMap;
 var ID_Sponsor = {};
-
+let PI_ProjTitle={};
 
 function convertToJSON(array) {
     let first = array[0].join()
@@ -89,3 +90,24 @@ for(let obj of data){
 }
 
 fs.writeFileSync(ID_SponsorMapPath,JSON.stringify(ID_Sponsor));
+
+
+// PI name with Project title mapper
+  for(let pi_sp_obj of jsondata){
+      if(PI_ProjTitle[pi_sp_obj['Principal Investigator']]){
+        let val=PI_ProjTitle[pi_sp_obj['Principal Investigator']];
+        let project_title=pi_sp_obj['Proposal Title'];
+       val= val+" "+project_title;
+       PI_ProjTitle[pi_sp_obj['Principal Investigator'].toLowerCase()]=val.toLowerCase();
+        
+      }else{
+          let val="";
+          val=pi_sp_obj['Proposal Title'];
+        PI_ProjTitle[pi_sp_obj['Principal Investigator'].toLowerCase()]=val.toLowerCase();
+      }
+  }
+
+  fs.writeFileSync(PI_ProjectTitlePath,JSON.stringify(PI_ProjTitle));
+  // console.log(PI_ProjTitle);
+
+

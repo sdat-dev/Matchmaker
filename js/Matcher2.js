@@ -19,9 +19,10 @@ window.onload = function () {
     let PI_Data_MapFile = axios.get("JSONs/PI_Data_Map.json");
     let PI_Sponsor_MapFile = axios.get("JSONs/PI_Sponsor.json");
     let ID_Sponsor_MapPath = axios.get("JSONs/ID_Sponsor.json");
+    let PI_ProjectTitleMap = axios.get("JSONs/PI_ProjectTitle.json");
     let datarequest = axios.get(datarequestURL);
 
-    axios.all([datarequest,tree3File,tree2File,tree1File,keyIdArrFile,PI_Data_MapFile,PI_Sponsor_MapFile,ID_Sponsor_MapPath]).then(axios.spread((...responses) => {
+    axios.all([datarequest,tree3File,tree2File,tree1File,keyIdArrFile,PI_Data_MapFile,PI_Sponsor_MapFile,ID_Sponsor_MapPath,PI_ProjectTitleMap]).then(axios.spread((...responses) => {
         let dictJson = responses[0].data;
         let tree3 = responses[1].data;
         let tree2 = responses[2].data;
@@ -30,7 +31,8 @@ window.onload = function () {
         let PI_Data_Map = responses[5].data;
         let PI_Sponsor = responses[6].data;
         let ID_Sponsor = responses[7].data;
-            
+        let PI_ProjectTitleData = responses[8].data;
+
         const { convert } = require('html-to-text');
         const natural = require('natural/lib/natural/tfidf');
         var TfIdf = natural.TfIdf
@@ -159,6 +161,7 @@ window.onload = function () {
 
         function checkSimilarityWithName(fName,lName) {
             let fullName = lName.toLowerCase() + ", " + fName.toLowerCase();
+            let fullMameWithoutComma=fName.toLowerCase() + " "+ lName.toLowerCase();
             let idsWithScore = {};
             if(PI_Data_Map.hasOwnProperty(fullName)){
                 let PI_data = PI_Data_Map[fullName].content;
@@ -175,6 +178,23 @@ window.onload = function () {
                 }
                 return result;
             }
+            //take project title from spreadsheet Proposals
+            else if(PI_ProjectTitleData[fullMameWithoutComma]){
+                console.log("found");
+                let PI_data=PI_ProjectTitleData[fullMameWithoutComma];
+                let scoreWithMultiplier = findKeywords(PI_data.toLowerCase());
+                for ([key] of Object.entries(scoreWithMultiplier)) {
+                    idsWithScore[key] = dictJson[key];
+                }
+                let dct = getScoreFromText(PI_data);
+                let result = {};
+                for (let opportunity in dictJson) {
+                    let value = dictJson[opportunity];
+                    let score = intersection(dct, value);
+                    result[opportunity] = score;
+                }
+                return result;
+              }
             else{
                 return null;
             }
@@ -183,7 +203,7 @@ window.onload = function () {
 
         function checkSimilarity2Param(lhs, rhs) {
             let result = {};
-            var dct = getScoreFromText(lhs);
+            let dct = getScoreFromText(lhs);
             for (let opportunity in rhs) {
                 let value = rhs[opportunity];
                 let score = intersection(dct, value);
@@ -535,7 +555,7 @@ window.onload = function () {
                 }
                 }
                //---------------------------------------------------------------------------
-                //CASE :: when user inputs name only and no description
+                //CASE :: when user inputs only name and not description
                 else if(!description && firstName && lastName){
                   console.log("no desc");
                   let similarResult = checkSimilarityWithName(firstName,lastName);
