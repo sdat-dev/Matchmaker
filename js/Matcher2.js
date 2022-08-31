@@ -43,7 +43,7 @@ window.onload = function () {
         const findKeywords = (content) => {
        
             for (const [key, val] of Object.entries(tree3)) {
-                if (content.includes(key.toLowerCase())) {
+                if(content.includes(key.toLowerCase())){
                     // console.log(key,"-----key",val,'--val');
                     if(idMapper[key]){
                       // console.log(key,'---keyyyy');
@@ -145,6 +145,17 @@ window.onload = function () {
                 tableCreate(final);
             }
         }
+
+        function checkIfnameExists(fName,lName){
+            let fullName = lName.toLowerCase() + ", " + fName.toLowerCase();
+              
+              if(PI_Data_Map.hasOwnProperty(fullName)){
+                return true;
+              }
+              else{
+                return null;
+              }
+          }
 
         function checkSimilarityWithName(fName,lName) {
             let fullName = lName.toLowerCase() + ", " + fName.toLowerCase();
@@ -474,9 +485,60 @@ window.onload = function () {
             btnName.addEventListener('click', event => {
                 let firstName = document.getElementById("fName").value;
                 let lastName = document.getElementById("lName").value;
+                let description=document.getElementById('Description2').value;
+                // console.log(description);
                 let sortArray = [];   
                 // alert(Description);
-                let similarResult = checkSimilarityWithName(firstName,lastName);
+                //---------------------------------------------------------------------------
+                //CASE : when user inputs name and description
+                if(description && firstName && lastName){
+                  console.log("all vals");
+
+                let profExists = checkIfnameExists(firstName,lastName);
+                if(profExists!=null){
+                  console.log("Only description related reuslts logic starts ----------------------------");
+                  let scoreWithMultiplier = findKeywords(description.toLowerCase());
+                let idsWithScore = {};
+                let sortArray = [];         //Will contain all SPIN IDs with tf-idf scores in decr order
+                for ([key] of Object.entries(scoreWithMultiplier)) {
+                    idsWithScore[key] = dictJson[key];
+                }
+                let similarResult = checkSimilarity2Param(description, dictJson); //pass all ids for similarity check (initially: idsWithScore)
+                // console.log(similarResult, "before-----");
+                //score reduction logic
+                for(const [keys,vals] of Object.entries(similarResult)){
+                    similarResult[keys]= similarResult[keys]/4;
+                }
+                for (let [key, val] of Object.entries(similarResult)) {
+                    if(key in scoreDict){
+                        // similarResult[key] = val * scoreDict[key];
+                        if(scoreDict[key]>=8){
+                          similarResult[key]=100+similarResult[key];
+                        }
+                    }  
+                }
+                for (let [key, val] of Object.entries(similarResult)) {
+                    let tobj = { id: key, score: val }
+                    // tobj[key]={score:val};
+                    sortArray.push(tobj);
+                }
+                sortArray.sort((a, b) => b.score - a.score);
+                      //----------------------------
+                    //SPONSER SORT LOGIC STARTS
+                    let fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
+                    final = SortBySponName(sortArray.slice(0, 20),fullName);
+                    console.log("The following abstracts found-->\n", final)
+                    tableCreate(final);
+                }
+                else{
+                    alert("Data for the provided researcher name not found!")
+                }
+                }
+               //---------------------------------------------------------------------------
+                //CASE :: when user inputs name only and no description
+                else if(!description && firstName && lastName){
+                  console.log("no desc");
+                  let similarResult = checkSimilarityWithName(firstName,lastName);
                 if(similarResult!=null){
                     for(const [keys,vals] of Object.entries(similarResult)){
                         similarResult[keys]= similarResult[keys]/4;
@@ -503,9 +565,49 @@ window.onload = function () {
                 else{
                     alert("Data for the provided researcher name not found!")
                 }
+                }
+                //---------------------------------------------------------------------------
+                //CASE : when user inputs no name and description only
+                else if(description && !firstName && !lastName){
+                  console.log("only desc");
+                  let scoreWithMultiplier = findKeywords(description.toLowerCase());
+                let idsWithScore = {};
+                let sortArray = [];         //Will contain all SPIN IDs with tf-idf scores in decr order
+                for ([key] of Object.entries(scoreWithMultiplier)) {
+                    idsWithScore[key] = dictJson[key];
+                }
+                let similarResult = checkSimilarity2Param(description, dictJson); //pass all ids for similarity check (initially: idsWithScore)
+                // console.log(similarResult, "before-----");
+                //score reduction logic
+                // console.log('-----------------');
+                for(const [keys,vals] of Object.entries(similarResult)){
+                    similarResult[keys]= similarResult[keys]/4;
+                }
+    
+                for (let [key, val] of Object.entries(similarResult)) {
+                    if(key in scoreDict){
+                        // similarResult[key] = val * scoreDict[key];
+                        if(scoreDict[key]>=8){
+                          similarResult[key]=100+similarResult[key];
+                        }
+                    }  
+                }
+                for (let [key, val] of Object.entries(similarResult)) {
+                    let tobj = { id: key, score: val }
+                    // tobj[key]={score:val};
+                    sortArray.push(tobj);
+                }
+                sortArray.sort((a, b) => b.score - a.score);
+                final = sortArray.slice(0, 20);
+                console.log("The following abstracts found-->\n", final)
+                tableCreate(final);
+
+                }
+                else{
+                  alert("Invalid data");
+                }  
             });
         }
-        
         // result[text] = checkSimilarity(text,dictJson)
         populateSet(mySet);
         // var text = "The purpose of this Funding Opportunity Announcement (FOA) is to support studies to investigate mechanisms by which the gut microbiome and gut immune system modulates the brain functions, circuits, neurotransmitters, signaling pathways and synaptic plasticity in the context of HIV and Anti-retroviral therapy. Exploratory and high-risk research projects are encouraged. Basic, preclinical, and clinical (e.g., pathophysiology or mechanisms) research in domestic and international settings are of interest. No clinical trials will be accepted for this FOA. Multidisciplinary research teams and collaborative alliances are encouraged but not required. In the United States and globally, Central Nervous System (CNS) comorbidities associated with HIV including neurologic, neurocognitive, and mental health problems continue to persist in people living with HIV (PWH) despite effective antiretroviral therapy (ART). Considerable gaps exist in the understanding of CNS comorbidities associated with HIV in the context of ART. Recent studies have shown gut microbiota and gut immune system can alter brain development, neurotransmitter systems, signaling pathways, synaptic related proteins, and modulate behavior. From early stages of infection, HIV alters the gut immune system and the gut microbiome (dysbiosis) resulting in immune dysfunction as well as higher levels of systemic inflammation. ART does not completely reverse the impact of HIV on the gut immune system and the microbiome. To date there is a paucity of studies looking at unique pathways and mechanisms of gut microbiome and gut-related immune dysregulation impacting CNS-related outcomes in PWH. An enhanced understanding of mechanisms underlying gut microbiome-immune-CNS interactions may provide novel insights into CNS comorbidities observed in PWH.";
