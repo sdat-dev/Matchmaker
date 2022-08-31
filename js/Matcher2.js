@@ -1,9 +1,9 @@
 const fs = require('fs');
-function fundingop(){
+function fundingop() {
     let datarequestURL = "data/JSON.json";
-    let datarequest =  axios.get(datarequestURL);
+    let datarequest = axios.get(datarequestURL);
     axios.all([datarequest]).then(axios.spread((...responses) => {
-        let solicitations =  responses[0].data;
+        let solicitations = responses[0].data;
         parseData(solicitations);
     }))
 }
@@ -22,7 +22,7 @@ window.onload = function () {
     let PI_ProjectTitleMap = axios.get("JSONs/PI_ProjectTitle.json");
     let datarequest = axios.get(datarequestURL);
 
-    axios.all([datarequest,tree3File,tree2File,tree1File,keyIdArrFile,PI_Data_MapFile,PI_Sponsor_MapFile,ID_Sponsor_MapPath,PI_ProjectTitleMap]).then(axios.spread((...responses) => {
+    axios.all([datarequest, tree3File, tree2File, tree1File, keyIdArrFile, PI_Data_MapFile, PI_Sponsor_MapFile, ID_Sponsor_MapPath, PI_ProjectTitleMap]).then(axios.spread((...responses) => {
         let dictJson = responses[0].data;
         let tree3 = responses[1].data;
         let tree2 = responses[2].data;
@@ -43,66 +43,66 @@ window.onload = function () {
         let scoreDict = {};
 
         const findKeywords = (content) => {
-       
+
             for (const [key, val] of Object.entries(tree3)) {
-                if(content.includes(key.toLowerCase())){
+                if (content.includes(key.toLowerCase())) {
                     // console.log(key,"-----key",val,'--val');
-                    if(idMapper[key]){
-                      // console.log(key,'---keyyyy');
-                    for (let id of idMapper[key]) {
-                     
-                      if(id in scoreDict){
-                        scoreDict[id]+= 8;
-                      }
-                      else{
-                        scoreDict[id] = 8;
-                      }
-                        // console.log(id);
-                    }
-                  
-                    // console.log(idMapper[key].length);
-                    //TODO logic for scoring and matching spin content for cousins
-                    console.log(val, "--------------------value");
-                    for (let keywrd of tree2[val]) { //for all children of level 2
-                        if (idMapper[keywrd] && keywrd != key) {
-                            // console.log(keywrd,"--",idMapper[keywrd]);
-                            for (let spin_id of idMapper[keywrd]) {
-                                if (!scoreDict[spin_id]) {
-                                    // console.log(spin_id);
-                                    scoreDict[spin_id] = 2;
+                    if (idMapper[key]) {
+                        // console.log(key,'---keyyyy');
+                        for (let id of idMapper[key]) {
+
+                            if (id in scoreDict) {
+                                scoreDict[id] += 8;
+                            }
+                            else {
+                                scoreDict[id] = 8;
+                            }
+                            // console.log(id);
+                        }
+
+                        // console.log(idMapper[key].length);
+                        //TODO logic for scoring and matching spin content for cousins
+                        console.log(val, "--------------------value");
+                        for (let keywrd of tree2[val]) { //for all children of level 2
+                            if (idMapper[keywrd] && keywrd != key) {
+                                // console.log(keywrd,"--",idMapper[keywrd]);
+                                for (let spin_id of idMapper[keywrd]) {
+                                    if (!scoreDict[spin_id]) {
+                                        // console.log(spin_id);
+                                        scoreDict[spin_id] = 2;
+                                    }
                                 }
                             }
                         }
-                    }
-        
-                    //for all children of level 1 of same category ----------
-                    for (let [l1key, l1val] of Object.entries(tree1)) {
-                        if (l1val.includes(val)) {
-                            // console.log(l1key);
-                            for (let keyterm of l1val) {
-                                if (keyterm != val) {
-                                    console.log(keyterm);
-                                    //map ids start ------
-                                    if(tree2[keyterm]){
-                                    for (let keywrd of tree2[keyterm]) { //go through  children of level 2
-                                        if (idMapper[keywrd] && keywrd != key) {
-                                            // console.log(keywrd,"--",idMapper[keywrd]);
-                                            for (let spin_id of idMapper[keywrd]) { //get ids for each c3 keyword
-                                                if (!scoreDict[spin_id]) {
-                                                    // console.log(spin_id);
-                                                    scoreDict[spin_id] = 1;
+
+                        //for all children of level 1 of same category ----------
+                        for (let [l1key, l1val] of Object.entries(tree1)) {
+                            if (l1val.includes(val)) {
+                                // console.log(l1key);
+                                for (let keyterm of l1val) {
+                                    if (keyterm != val) {
+                                        console.log(keyterm);
+                                        //map ids start ------
+                                        if (tree2[keyterm]) {
+                                            for (let keywrd of tree2[keyterm]) { //go through  children of level 2
+                                                if (idMapper[keywrd] && keywrd != key) {
+                                                    // console.log(keywrd,"--",idMapper[keywrd]);
+                                                    for (let spin_id of idMapper[keywrd]) { //get ids for each c3 keyword
+                                                        if (!scoreDict[spin_id]) {
+                                                            // console.log(spin_id);
+                                                            scoreDict[spin_id] = 1;
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
+
+                                        //ends -----------
                                     }
-                                }
-        
-                                    //ends -----------
                                 }
                             }
                         }
                     }
-                  }
                 }
             }
             //some change
@@ -114,18 +114,18 @@ window.onload = function () {
             var dct = getScoreFromText(lhs);
             var final = [];
             result[lhs] = new Object();
-            var max=0;
+            var max = 0;
             // console.log("DCT now :")
             // console.log(dct)
             // console.log(dictJson)
-        
+
             for (var opportunity in dictJson) {
                 var value = dictJson[opportunity];
                 cmnCount = intersection(dct, value);
                 // console.log(value)
-                if(cmnCount>max)
-                    max=cmnCount
-                if(cmnCount>1){
+                if (cmnCount > max)
+                    max = cmnCount
+                if (cmnCount > 1) {
                     var url = "https://spin.infoedglobal.com/Program/Detail/" + opportunity;
                     result[lhs][opportunity] = new Object();
                     result[lhs][opportunity].link = url;
@@ -135,9 +135,9 @@ window.onload = function () {
                     arr.push(result[lhs][opportunity]);
                 }
             }
-            if(max==0){
+            if (max == 0) {
                 console.log("No similar abstracts found!")
-            }else{
+            } else {
                 // return result[lhs]
                 arr.sort((a, b) => {
                     return b.cmnCount - a.cmnCount;
@@ -148,22 +148,25 @@ window.onload = function () {
             }
         }
 
-        function checkIfnameExists(fName,lName){
+        function checkIfnameExists(fName, lName) {
             let fullName = lName.toLowerCase() + ", " + fName.toLowerCase();
-              
-              if(PI_Data_Map.hasOwnProperty(fullName)){
+            let fullMameWithoutComma = fName.toLowerCase() + " " + lName.toLowerCase();
+            if (PI_Data_Map.hasOwnProperty(fullName)) {
                 return true;
-              }
-              else{
+            }
+            else if (PI_ProjectTitleData[fullMameWithoutComma]) {
+                return true;
+            }
+            else {
                 return null;
-              }
-          }
+            }
+        }
 
-        function checkSimilarityWithName(fName,lName) {
+        function checkSimilarityWithName(fName, lName) {
             let fullName = lName.toLowerCase() + ", " + fName.toLowerCase();
-            let fullMameWithoutComma=fName.toLowerCase() + " "+ lName.toLowerCase();
+            let fullMameWithoutComma = fName.toLowerCase() + " " + lName.toLowerCase();
             let idsWithScore = {};
-            if(PI_Data_Map.hasOwnProperty(fullName)){
+            if (PI_Data_Map.hasOwnProperty(fullName)) {
                 let PI_data = PI_Data_Map[fullName].content;
                 let scoreWithMultiplier = findKeywords(PI_data.toLowerCase());
                 for ([key] of Object.entries(scoreWithMultiplier)) {
@@ -179,9 +182,9 @@ window.onload = function () {
                 return result;
             }
             //take project title from spreadsheet Proposals
-            else if(PI_ProjectTitleData[fullMameWithoutComma]){
+            else if (PI_ProjectTitleData[fullMameWithoutComma]) {
                 console.log("found");
-                let PI_data=PI_ProjectTitleData[fullMameWithoutComma];
+                let PI_data = PI_ProjectTitleData[fullMameWithoutComma];
                 let scoreWithMultiplier = findKeywords(PI_data.toLowerCase());
                 for ([key] of Object.entries(scoreWithMultiplier)) {
                     idsWithScore[key] = dictJson[key];
@@ -194,11 +197,11 @@ window.onload = function () {
                     result[opportunity] = score;
                 }
                 return result;
-              }
-            else{
+            }
+            else {
                 return null;
             }
-            
+
         }
 
         function checkSimilarity2Param(lhs, rhs) {
@@ -212,17 +215,17 @@ window.onload = function () {
             return result;
         }
 
-        function getResultData(jsonData,solicitations){
+        function getResultData(jsonData, solicitations) {
             let accordionContent = document.createElement("div");
             accordionContent.innerHTML = ''
-            for(var i=0;i<jsonData.length;i++){
+            for (var i = 0; i < jsonData.length; i++) {
                 accordionContent.innerHTML += generateAccordianContent(solicitations[jsonData[i].id]).innerHTML;
             }
             retVal = generateAccordionElem(8, "collapse8", "heading8", "accordion-ops", "child8", "Results", accordionContent);
             return retVal;
         }
 
-        function generateAccordianContent(data){
+        function generateAccordianContent(data) {
             let content = document.createElement("div");
             let flag = false;   //To check if deadline is already past
             spin_logo = "https://sdat-dev.github.io/resources/wecliemprep/assets/logos-funding-opportunities/SPIN_logo.png";
@@ -248,13 +251,13 @@ window.onload = function () {
                 style: 'currency',
                 currency: 'USD',
             });
-            if (data.total_funding_limit  === 0) {
+            if (data.total_funding_limit === 0) {
                 Estimated_Funding = "N/A";
             } else {
-                Estimated_Funding = formatter.format(data.total_funding_limit );
+                Estimated_Funding = formatter.format(data.total_funding_limit);
             }
             var description = '';
-            if(data.synopsis != null){
+            if (data.synopsis != null) {
                 var description = data.synopsis.replace(/<[^>]*>/g, '');
             }
             if (dueDate != "Continuous Submission/Contact the Program Officer") {
@@ -264,20 +267,20 @@ window.onload = function () {
                 }
             }
             content.innerHTML = '';
-            if(flag){
+            if (flag) {
                 content.innerHTML += '<div class="display-flex opportunity-container search-container">'
-                + '<div class="col-xl-2 col-lg-3">'
-                + '<img class="agency-logo" src="'+ spin_logo +'"></div>'
-                + '<div class="col-xl-10 col-lg-9">'
-                + '<h4 class="opp-header black-content-header-no-margin">' + data.prog_title + '</h4>'
-                + '<div class="opp-details display-flex">'
-                + '<div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">'
-                + '<i class="fas fa-flag"></i><strong>Agency Name: </strong>' + data.spon_name + '<br><i class="fas fa-dollar-sign"></i>'
-                + '<strong>Estimated Funding: </strong>' + Estimated_Funding + '<br></div>'
-                + '<div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">'
-                + '<i class="fas fa-calendar-day"></i> <strong>Date: </strong>' + dueDate + '<br></div></div></div><br><br><br><br><br><br><br>'
-                + '<p class="opp-description">' + description + '</p><p class="width100" style="padding-left: 15px;">'
-                + '<button type="button" class="details-button" onclick="window.open(\'' + data.programurl +'\',\'_blank\')">View Details</button></p></div>';
+                    + '<div class="col-xl-2 col-lg-3">'
+                    + '<img class="agency-logo" src="' + spin_logo + '"></div>'
+                    + '<div class="col-xl-10 col-lg-9">'
+                    + '<h4 class="opp-header black-content-header-no-margin">' + data.prog_title + '</h4>'
+                    + '<div class="opp-details display-flex">'
+                    + '<div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">'
+                    + '<i class="fas fa-flag"></i><strong>Agency Name: </strong>' + data.spon_name + '<br><i class="fas fa-dollar-sign"></i>'
+                    + '<strong>Estimated Funding: </strong>' + Estimated_Funding + '<br></div>'
+                    + '<div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">'
+                    + '<i class="fas fa-calendar-day"></i> <strong>Date: </strong>' + dueDate + '<br></div></div></div><br><br><br><br><br><br><br>'
+                    + '<p class="opp-description">' + description + '</p><p class="width100" style="padding-left: 15px;">'
+                    + '<button type="button" class="details-button" onclick="window.open(\'' + data.programurl + '\',\'_blank\')">View Details</button></p></div>';
             }
             return content;
         }
@@ -287,20 +290,20 @@ window.onload = function () {
             let accordionElem = document.createElement("div");
             console.log("Content : ", accordionContent);
             accordionElem.innerHTML = '';
-            accordionElem.innerHTML += '<div class="panel panel-default">'+
-                                  '<div class="panel-heading level' + level + '" role="tab" id="'+ headerId +'">' +
-                                     '<h' + headerno + ' class = "panel-title">' +
-                                         '<button class="btn btn-link collapsed" type="button" data-toggle="collapse"  data-parent="#'+ parentId + '" data-target="#'+ collapseId + '" aria-expanded="false" aria-controls="'+collapseId+'">' +
-                                            header + '<i class="fas fa-chevron-up"></i>'+
-                                          '</button>'+
-                                     '</h' + headerno + '>'+
-                                  '</div>'
-                                + '<div id="' + collapseId + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="'+headerId+'">'+
-                                    '<div class="panel-body" id="' + childId + '">'
-                                      + accordionContent.innerHTML + 
-                                    '</div>'+
-                                   '</div>'+
-                                '</div>';
+            accordionElem.innerHTML += '<div class="panel panel-default">' +
+                '<div class="panel-heading level' + level + '" role="tab" id="' + headerId + '">' +
+                '<h' + headerno + ' class = "panel-title">' +
+                '<button class="btn btn-link collapsed" type="button" data-toggle="collapse"  data-parent="#' + parentId + '" data-target="#' + collapseId + '" aria-expanded="false" aria-controls="' + collapseId + '">' +
+                header + '<i class="fas fa-chevron-up"></i>' +
+                '</button>' +
+                '</h' + headerno + '>' +
+                '</div>'
+                + '<div id="' + collapseId + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="' + headerId + '">' +
+                '<div class="panel-body" id="' + childId + '">'
+                + accordionContent.innerHTML +
+                '</div>' +
+                '</div>' +
+                '</div>';
             return accordionElem;
         }
 
@@ -308,12 +311,12 @@ window.onload = function () {
             var dict = new Object();
             const tfidf = new TfIdf();
             tfidf.addDocument(text);
-            tfidf.listTerms(0 /*document index*/).every(function(item) {
-                if(noOfKeywords<=0){
+            tfidf.listTerms(0 /*document index*/).every(function (item) {
+                if (noOfKeywords <= 0) {
                     return false;
                 }
                 let isnum = /^\d+$/.test(item.term);
-                if(!isnum && !mySet.has(item.term)){
+                if (!isnum && !mySet.has(item.term)) {
                     dict[item.term] = item.tfidf.toFixed(3);
                     noOfKeywords--;
                 }
@@ -321,7 +324,7 @@ window.onload = function () {
             });
             return dict;
         }
-        
+
         function populateSet(mySet) {
             mySet.add("research");
             mySet.add("grants");
@@ -378,7 +381,7 @@ window.onload = function () {
             mySet.add("programs");
             mySet.add("programs");
         }
-        
+
         function intersection(o1, o2) {
             let score = 0;
             for (const [key, value] of Object.entries(o1)) {
@@ -391,7 +394,7 @@ window.onload = function () {
 
         function tableCreate(data) {
             let oldAccord = document.getElementsByClassName('panel-group')[0];
-            oldAccord.setAttribute("hidden",true);
+            oldAccord.setAttribute("hidden", true);
             let maincontentContainer = document.getElementsByClassName('main-content')[0];
             // var body = document.getElementsByTagName('body')[0];
             var tbl = document.createElement('table');
@@ -400,17 +403,17 @@ window.onload = function () {
             tbl.setAttribute('border', '1');
             var tbdy = document.createElement('tbody');
             for (var i = 0; i < data.length; i++) {
-                var ii=i+1;
+                var ii = i + 1;
                 var link = data[i].link;
                 var tr = document.createElement('tr');
                 for (var j = 0; j < 2; j++) {
-                    if(j==0){
+                    if (j == 0) {
                         var td = document.createElement('td');
-                        td.appendChild(document.createTextNode('Suggestion '+ ii))
+                        td.appendChild(document.createTextNode('Suggestion ' + ii))
                         tr.appendChild(td)
                     }
-                    else{
-                        content = '<button><a href="'+link+'">Click Here!</a></button>'
+                    else {
+                        content = '<button><a href="' + link + '">Click Here!</a></button>'
                         var td = document.createElement('td');
                         td.innerHTML = content;
                         tr.appendChild(td)
@@ -419,48 +422,48 @@ window.onload = function () {
                 tbdy.appendChild(tr);
             }
             tbl.appendChild(tbdy);
-             // maincontentContainer.appendChild(tbl)
-             let datarequest = axios.get('dir/newJson.json');
-             axios.all([datarequest]).then(axios.spread((...responses) => {
-                 let solicitations = responses[0].data;
-                 let htmlVal = getResultData(data,solicitations);
-                 maincontentContainer.appendChild(htmlVal);
-             })).catch(errors => {
-                 console.log(errors);
-             })
+            // maincontentContainer.appendChild(tbl)
+            let datarequest = axios.get('dir/newJson.json');
+            axios.all([datarequest]).then(axios.spread((...responses) => {
+                let solicitations = responses[0].data;
+                let htmlVal = getResultData(data, solicitations);
+                maincontentContainer.appendChild(htmlVal);
+            })).catch(errors => {
+                console.log(errors);
+            })
         }
 
-        function SortBySponName(array,name) {
+        function SortBySponName(array, name) {
             let retArray = [];
             let set = new Set();
-            if(!PI_Sponsor.hasOwnProperty(name)){
+            if (!PI_Sponsor.hasOwnProperty(name)) {
                 return array;
-            }else{
-                for(let obj of PI_Sponsor[name]){
+            } else {
+                for (let obj of PI_Sponsor[name]) {
                     console.log(obj);
                 }
                 console.log("--------------\nSponsorNamesOfPI-->\n" + Object.values(PI_Sponsor[name]) + "\n\n\nOp Sponsor with ID-->\n");
-                for(let obj of PI_Sponsor[name]){
-                    for(let op of array){
+                for (let obj of PI_Sponsor[name]) {
+                    for (let op of array) {
                         console.log(ID_Sponsor[op.id]);
-                        if(ID_Sponsor[op.id] == Object.keys(obj)[0]){
-                            console.log(Object.keys(obj)[0]+"   ---Matched---")
+                        if (ID_Sponsor[op.id] == Object.keys(obj)[0]) {
+                            console.log(Object.keys(obj)[0] + "   ---Matched---")
                             retArray.push(op);
                             set.add(op.id);
                         }
                     }
                 }
-                for(let obj of array){
-                    if(!set.has(obj.id)){
+                for (let obj of array) {
+                    if (!set.has(obj.id)) {
                         retArray.push(obj);
                     }
                 }
                 return retArray;
             }
         }
-        
+
         let btn = document.getElementById("btn");
-        if(btn){
+        if (btn) {
             btn.addEventListener('click', event => {
                 let Description = document.getElementById("Description").value;
                 // alert(Description);
@@ -474,18 +477,18 @@ window.onload = function () {
                 // console.log(similarResult, "before-----");
                 //score reduction logic
                 // console.log('-----------------');
-                for(const [keys,vals] of Object.entries(similarResult)){
-                    similarResult[keys]= similarResult[keys]/4;
+                for (const [keys, vals] of Object.entries(similarResult)) {
+                    similarResult[keys] = similarResult[keys] / 4;
                 }
                 // console.log('---------------');
 
                 for (let [key, val] of Object.entries(similarResult)) {
-                    if(key in scoreDict){
+                    if (key in scoreDict) {
                         // similarResult[key] = val * scoreDict[key];
-                        if(scoreDict[key]>=8){
-                          similarResult[key]=100+similarResult[key];
+                        if (scoreDict[key] >= 8) {
+                            similarResult[key] = 100 + similarResult[key];
                         }
-                    }  
+                    }
                 }
                 for (let [key, val] of Object.entries(similarResult)) {
                     let tobj = { id: key, score: val }
@@ -498,78 +501,119 @@ window.onload = function () {
                 tableCreate(final);
             });
         }
-        
-        
+
+
         let btnName = document.getElementById("btnName");
-        if(btnName){
+        if (btnName) {
             btnName.addEventListener('click', event => {
                 let firstName = document.getElementById("fName").value;
                 let lastName = document.getElementById("lName").value;
-                let description=document.getElementById('Description2').value;
+                let description = document.getElementById('Description2').value;
                 // console.log(description);
-                let sortArray = [];   
+                let sortArray = [];
                 // alert(Description);
                 //---------------------------------------------------------------------------
                 //CASE : when user inputs name and description
-                if(description && firstName && lastName){
-                  console.log("all vals");
+                if (description && firstName && lastName) {
+                    console.log("all vals");
 
-                let profExists = checkIfnameExists(firstName,lastName);
-                if(profExists!=null){
-                  console.log("Only description related reuslts logic starts ----------------------------");
-                  let scoreWithMultiplier = findKeywords(description.toLowerCase());
-                let idsWithScore = {};
-                let sortArray = [];         //Will contain all SPIN IDs with tf-idf scores in decr order
-                for ([key] of Object.entries(scoreWithMultiplier)) {
-                    idsWithScore[key] = dictJson[key];
-                }
-                let similarResult = checkSimilarity2Param(description, dictJson); //pass all ids for similarity check (initially: idsWithScore)
-                // console.log(similarResult, "before-----");
-                //score reduction logic
-                for(const [keys,vals] of Object.entries(similarResult)){
-                    similarResult[keys]= similarResult[keys]/4;
-                }
-                for (let [key, val] of Object.entries(similarResult)) {
-                    if(key in scoreDict){
-                        // similarResult[key] = val * scoreDict[key];
-                        if(scoreDict[key]>=8){
-                          similarResult[key]=100+similarResult[key];
+                    let profExists = checkIfnameExists(firstName, lastName);
+                    if (profExists != null) {
+                        console.log("Only description related reuslts logic starts ----------------------------");
+                        let scoreWithMultiplier = findKeywords(description.toLowerCase());
+                        let idsWithScore = {};
+                        let sortArray = [];         //Will contain all SPIN IDs with tf-idf scores in decr order
+                        for ([key] of Object.entries(scoreWithMultiplier)) {
+                            idsWithScore[key] = dictJson[key];
                         }
-                    }  
-                }
-                for (let [key, val] of Object.entries(similarResult)) {
-                    let tobj = { id: key, score: val }
-                    // tobj[key]={score:val};
-                    sortArray.push(tobj);
-                }
-                sortArray.sort((a, b) => b.score - a.score);
-                      //----------------------------
-                    //SPONSER SORT LOGIC STARTS
-                    let fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
-                    final = SortBySponName(sortArray.slice(0, 20),fullName);
-                    console.log("The following abstracts found-->\n", final)
-                    tableCreate(final);
-                }
-                else{
-                    alert("Data for the provided researcher name not found!")
-                }
-                }
-               //---------------------------------------------------------------------------
-                //CASE :: when user inputs only name and not description
-                else if(!description && firstName && lastName){
-                  console.log("no desc");
-                  let similarResult = checkSimilarityWithName(firstName,lastName);
-                if(similarResult!=null){
-                    for(const [keys,vals] of Object.entries(similarResult)){
-                        similarResult[keys]= similarResult[keys]/4;
-                    }
-                    for (let [key, val] of Object.entries(similarResult)) {
-                        if(key in scoreDict){
-                            // similarResult[key] = val * scoreDict[key];
-                            if(scoreDict[key]>=8){
-                                similarResult[key]=100+similarResult[key];
+                        let similarResult = checkSimilarity2Param(description, dictJson); //pass all ids for similarity check (initially: idsWithScore)
+                        // console.log(similarResult, "before-----");
+                        //score reduction logic
+                        for (const [keys, vals] of Object.entries(similarResult)) {
+                            similarResult[keys] = similarResult[keys] / 4;
+                        }
+                        for (let [key, val] of Object.entries(similarResult)) {
+                            if (key in scoreDict) {
+                                // similarResult[key] = val * scoreDict[key];
+                                if (scoreDict[key] >= 8) {
+                                    similarResult[key] = 100 + similarResult[key];
+                                }
                             }
-                        }  
+                        }
+                        for (let [key, val] of Object.entries(similarResult)) {
+                            let tobj = { id: key, score: val }
+                            // tobj[key]={score:val};
+                            sortArray.push(tobj);
+                        }
+                        sortArray.sort((a, b) => b.score - a.score);
+                        //----------------------------
+                        //SPONSER SORT LOGIC STARTS
+                        let fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
+                        final = SortBySponName(sortArray.slice(0, 20), fullName);
+                        console.log("The following abstracts found-->\n", final)
+                        tableCreate(final);
+                    }
+                    else {
+                        alert("Data for the provided researcher name not found!")
+                    }
+                }
+                //---------------------------------------------------------------------------
+                //CASE :: when user inputs only name and not description
+                else if (!description && firstName && lastName) {
+                    console.log("no desc");
+                    let similarResult = checkSimilarityWithName(firstName, lastName);
+                    if (similarResult != null) {
+                        for (const [keys, vals] of Object.entries(similarResult)) {
+                            similarResult[keys] = similarResult[keys] / 4;
+                        }
+                        for (let [key, val] of Object.entries(similarResult)) {
+                            if (key in scoreDict) {
+                                // similarResult[key] = val * scoreDict[key];
+                                if (scoreDict[key] >= 8) {
+                                    similarResult[key] = 100 + similarResult[key];
+                                }
+                            }
+                        }
+                        for (let [key, val] of Object.entries(similarResult)) {
+                            let tobj = { id: key, score: val }
+                            // tobj[key]={score:val};
+                            sortArray.push(tobj);
+                        }
+                        sortArray.sort((a, b) => b.score - a.score);
+                        let fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
+                        final = SortBySponName(sortArray.slice(0, 20), fullName);
+                        console.log("The following abstracts found-->\n", final)
+                        tableCreate(final);
+                    }
+                    else {
+                        alert("Data for the provided researcher name not found!")
+                    }
+                }
+                //---------------------------------------------------------------------------
+                //CASE : when user inputs no name and description only
+                else if (description && !firstName && !lastName) {
+                    console.log("only desc");
+                    let scoreWithMultiplier = findKeywords(description.toLowerCase());
+                    let idsWithScore = {};
+                    let sortArray = [];         //Will contain all SPIN IDs with tf-idf scores in decr order
+                    for ([key] of Object.entries(scoreWithMultiplier)) {
+                        idsWithScore[key] = dictJson[key];
+                    }
+                    let similarResult = checkSimilarity2Param(description, dictJson); //pass all ids for similarity check (initially: idsWithScore)
+                    // console.log(similarResult, "before-----");
+                    //score reduction logic
+                    // console.log('-----------------');
+                    for (const [keys, vals] of Object.entries(similarResult)) {
+                        similarResult[keys] = similarResult[keys] / 4;
+                    }
+
+                    for (let [key, val] of Object.entries(similarResult)) {
+                        if (key in scoreDict) {
+                            // similarResult[key] = val * scoreDict[key];
+                            if (scoreDict[key] >= 8) {
+                                similarResult[key] = 100 + similarResult[key];
+                            }
+                        }
                     }
                     for (let [key, val] of Object.entries(similarResult)) {
                         let tobj = { id: key, score: val }
@@ -577,55 +621,14 @@ window.onload = function () {
                         sortArray.push(tobj);
                     }
                     sortArray.sort((a, b) => b.score - a.score);
-                    let fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
-                    final = SortBySponName(sortArray.slice(0, 20),fullName);
+                    final = sortArray.slice(0, 20);
                     console.log("The following abstracts found-->\n", final)
                     tableCreate(final);
-                }
-                else{
-                    alert("Data for the provided researcher name not found!")
-                }
-                }
-                //---------------------------------------------------------------------------
-                //CASE : when user inputs no name and description only
-                else if(description && !firstName && !lastName){
-                  console.log("only desc");
-                  let scoreWithMultiplier = findKeywords(description.toLowerCase());
-                let idsWithScore = {};
-                let sortArray = [];         //Will contain all SPIN IDs with tf-idf scores in decr order
-                for ([key] of Object.entries(scoreWithMultiplier)) {
-                    idsWithScore[key] = dictJson[key];
-                }
-                let similarResult = checkSimilarity2Param(description, dictJson); //pass all ids for similarity check (initially: idsWithScore)
-                // console.log(similarResult, "before-----");
-                //score reduction logic
-                // console.log('-----------------');
-                for(const [keys,vals] of Object.entries(similarResult)){
-                    similarResult[keys]= similarResult[keys]/4;
-                }
-    
-                for (let [key, val] of Object.entries(similarResult)) {
-                    if(key in scoreDict){
-                        // similarResult[key] = val * scoreDict[key];
-                        if(scoreDict[key]>=8){
-                          similarResult[key]=100+similarResult[key];
-                        }
-                    }  
-                }
-                for (let [key, val] of Object.entries(similarResult)) {
-                    let tobj = { id: key, score: val }
-                    // tobj[key]={score:val};
-                    sortArray.push(tobj);
-                }
-                sortArray.sort((a, b) => b.score - a.score);
-                final = sortArray.slice(0, 20);
-                console.log("The following abstracts found-->\n", final)
-                tableCreate(final);
 
                 }
-                else{
-                  alert("Invalid data");
-                }  
+                else {
+                    alert("Invalid data");
+                }
             });
         }
         // result[text] = checkSimilarity(text,dictJson)
