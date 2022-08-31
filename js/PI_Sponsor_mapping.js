@@ -35,7 +35,10 @@ function convertToJSON(array) {
   };
 
   let jsondata=convertToJSON(datapart);
-//   console.log(jsondata);
+  // // console.log(jsondata);
+  // for(let i of jsondata){
+  //   console.log(i);
+  // }
 
   let PI_spons_map={};
   for(let pi_sp_obj of jsondata){
