@@ -481,11 +481,11 @@ window.onload = function () {
                 for (let obj of PI_Sponsor[name]) {
                     console.log(obj);
                 }
-                console.log("--------------\nSponsorNamesOfPI-->\n" + Object.values(PI_Sponsor[name]) + "\n\n\nOp Sponsor with ID-->\n");
+                // console.log("--------------\nSponsorNamesOfPI-->\n" + Object.values(PI_Sponsor[name]) + "\n\n\nOp Sponsor with ID-->\n");
                 for (let obj of PI_Sponsor[name]) {
                     for (let op of array) {
-                        console.log(ID_Sponsor[op.id]);
-                        if (ID_Sponsor[op.id] == Object.keys(obj)[0]) {
+                        // console.log(ID_Sponsor[op.id]);
+                        if (ID_Sponsor[op.id].includes( Object.keys(obj)[0])) {
                             console.log(Object.keys(obj)[0] + "   ---Matched---")
                             retArray.push(op);
                             set.add(op.id);
