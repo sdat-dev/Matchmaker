@@ -20,9 +20,11 @@ window.onload = function () {
     let PI_Sponsor_MapFile = axios.get("JSONs/PI_Sponsor.json");
     let ID_Sponsor_MapPath = axios.get("JSONs/ID_Sponsor.json");
     let PI_ProjectTitleMap = axios.get("JSONs/PI_ProjectTitle.json");
+    let PI_AbstractMap = axios.get('JSONs/PI_Abstract.json'); // created this from pacs test.js(not in this repo)
+
     let datarequest = axios.get(datarequestURL);
 
-    axios.all([datarequest, tree3File, tree2File, tree1File, keyIdArrFile, PI_Data_MapFile, PI_Sponsor_MapFile, ID_Sponsor_MapPath, PI_ProjectTitleMap]).then(axios.spread((...responses) => {
+    axios.all([datarequest, tree3File, tree2File, tree1File, keyIdArrFile, PI_Data_MapFile, PI_Sponsor_MapFile, ID_Sponsor_MapPath, PI_ProjectTitleMap,PI_AbstractMap]).then(axios.spread((...responses) => {
         let dictJson = responses[0].data;
         let tree3 = responses[1].data;
         let tree2 = responses[2].data;
@@ -32,6 +34,7 @@ window.onload = function () {
         let PI_Sponsor = responses[6].data;
         let ID_Sponsor = responses[7].data;
         let PI_ProjectTitleData = responses[8].data;
+        let PI_Abstract= responses[9].data;
 
         const { convert } = require('html-to-text');
         const natural = require('natural/lib/natural/tfidf');
@@ -182,9 +185,9 @@ window.onload = function () {
                 return result;
             }
             //take project title from spreadsheet Proposals
-            else if (PI_ProjectTitleData[fullMameWithoutComma]) {
+            else if(PI_Abstract[fullMameWithoutComma]){
                 console.log("found");
-                let PI_data = PI_ProjectTitleData[fullMameWithoutComma];
+                let PI_data=PI_Abstract[fullMameWithoutComma];
                 let scoreWithMultiplier = findKeywords(PI_data.toLowerCase());
                 for ([key] of Object.entries(scoreWithMultiplier)) {
                     idsWithScore[key] = dictJson[key];
@@ -197,12 +200,48 @@ window.onload = function () {
                     result[opportunity] = score;
                 }
                 return result;
-            }
+              }
             else {
                 return null;
             }
 
         }
+        // incase of not match at all TODO function
+        function SortBySponNameForNoMatch(array,name,keyMatchFlag) {
+            let retArray = [];
+            let set = new Set();
+            if(!PI_Sponsor.hasOwnProperty(name)){
+                return array;
+            }else{
+              let sponsCheckFlag=false;
+                for(let obj of PI_Sponsor[name]){
+                    console.log(obj);
+                }
+                // console.log("--------------\nSponsorNamesOfPI-->\n" + Object.values(PI_Sponsor[name]) + "\n\n\nOp Sponsor with ID-->\n");
+                for(let obj of PI_Sponsor[name]){
+                    for(let op of array){
+                        // console.log(ID_Sponsor[op.id]);
+                        if(ID_Sponsor[op.id] == Object.keys(obj)[0]){
+                            console.log(Object.keys(obj)[0]+"   ---Matched---")
+                            retArray.push(op);
+                            set.add(op.id);
+                            sponsCheckFlag=true;
+                        }
+                    }
+                }
+                for(let obj of array){
+                    if(!set.has(obj.id)){
+                        retArray.push(obj);
+                    }
+                }
+                //check for 2 flags i.e keymatch and spons match
+                if(sponsCheckFlag==false && keyMatchFlag==false){
+  
+                }
+                return retArray;
+            }
+        }
+  
 
         function checkSimilarity2Param(lhs, rhs) {
             let result = {};
