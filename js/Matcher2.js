@@ -184,7 +184,7 @@ window.onload = function () {
                 }
                 return result;
             }
-            //take project title from spreadsheet Proposals
+            //take project abstract from PACS Proposals
             else if(PI_Abstract[fullMameWithoutComma]){
                 console.log("found");
                 let PI_data=PI_Abstract[fullMameWithoutComma];
