@@ -265,6 +265,50 @@ window.onload = function () {
             return retVal;
         }
 
+        const checkDeadLines=(SortArraydata)=>{
+            let solicitations;
+            let flag = false;
+            let today = new Date();
+            let deadlineDate = "";
+            let Estimated_Funding = "";
+            let filteredResults=[];
+            let datarequest = axios.get('dir/newJson.json');
+            axios.all([datarequest]).then(axios.spread((...responses) => {
+                 solicitations = responses[0].data;
+            })).catch(errors => {
+                console.log(errors);
+            })
+            //here data is sorted ID array based on score
+            for(let idObj of SortArraydata){
+              let data=  solicitations[idObj.id];
+
+              if (data.NextDeadlineDate != null) {
+                if (data.NextDeadlineDate.length <= 11) {
+                    dueDate = data.NextDeadlineDate;
+                    deadlineDate = new Date(data.NextDeadlineDate).toLocaleDateString();
+                }
+                else {
+                    var dateArr = data.NextDeadlineDate.split(" ");
+                    dueDate = data.NextDeadlineDate.substring(1, 11);
+                    deadlineDate = new Date(dateArr[0]).toLocaleDateString();
+                }
+            } else {
+                dueDate = "Continuous Submission/Contact the Program Officer"
+                flag = true;
+            }
+            if (dueDate != "Continuous Submission/Contact the Program Officer") {
+                if (Date.parse(dueDate) > Date.parse(today)) {
+                    flag = true;
+                    dueDate = deadlineDate;
+                }
+            }
+            if (flag){
+                filteredResults.push(idObj);
+            }
+            }
+            return filteredResults;
+        }
+
         function generateAccordianContent(data) {
             let content = document.createElement("div");
             let flag = false;   //To check if deadline is already past
@@ -536,7 +580,8 @@ window.onload = function () {
                     sortArray.push(tobj);
                 }
                 sortArray.sort((a, b) => b.score - a.score);
-                final = sortArray.slice(0, 20);
+                let filteredArray=checkDeadLines(sortArray);
+                final = filteredArray.slice(0, 20);
                 console.log("The following abstracts found-->\n", final)
                 tableCreate(final);
             });
@@ -586,10 +631,12 @@ window.onload = function () {
                             sortArray.push(tobj);
                         }
                         sortArray.sort((a, b) => b.score - a.score);
+                        let filteredArray=checkDeadLines(sortArray);
+                        
                         //----------------------------
                         //SPONSER SORT LOGIC STARTS
                         let fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
-                        final = SortBySponName(sortArray.slice(0, 20), fullName);
+                        final = SortBySponName(filteredArray.slice(0, 20), fullName);
                         console.log("The following abstracts found-->\n", final)
                         tableCreate(final);
                     }
@@ -620,8 +667,9 @@ window.onload = function () {
                             sortArray.push(tobj);
                         }
                         sortArray.sort((a, b) => b.score - a.score);
+                        let filteredArray=checkDeadLines(sortArray);
                         let fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
-                        final = SortBySponName(sortArray.slice(0, 20), fullName);
+                        final = SortBySponName(filteredArray.slice(0, 20), fullName);
                         console.log("The following abstracts found-->\n", final)
                         tableCreate(final);
                     }
@@ -661,7 +709,8 @@ window.onload = function () {
                         sortArray.push(tobj);
                     }
                     sortArray.sort((a, b) => b.score - a.score);
-                    final = sortArray.slice(0, 20);
+                    let filteredArray=checkDeadLines(sortArray);
+                    final = filteredArray.slice(0, 20);
                     console.log("The following abstracts found-->\n", final)
                     tableCreate(final);
 
