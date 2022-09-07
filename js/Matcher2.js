@@ -169,23 +169,24 @@ window.onload = function () {
             let fullName = lName.toLowerCase() + ", " + fName.toLowerCase();
             let fullMameWithoutComma = fName.toLowerCase() + " " + lName.toLowerCase();
             let idsWithScore = {};
-            if (PI_Data_Map.hasOwnProperty(fullName)) {
-                let PI_data = PI_Data_Map[fullName].content;
-                let scoreWithMultiplier = findKeywords(PI_data.toLowerCase());
-                for ([key] of Object.entries(scoreWithMultiplier)) {
-                    idsWithScore[key] = dictJson[key];
-                }
-                var dct = getScoreFromText(PI_data);
-                let result = {};
-                for (let opportunity in dictJson) {
-                    let value = dictJson[opportunity];
-                    let score = intersection(dct, value);
-                    result[opportunity] = score;
-                }
-                return result;
-            }
-            //take project abstract from PACS Proposals
-            else if(PI_Abstract[fullMameWithoutComma]){
+            // if (PI_Data_Map.hasOwnProperty(fullName)) {
+            //     let PI_data = PI_Data_Map[fullName].content;
+            //     let scoreWithMultiplier = findKeywords(PI_data.toLowerCase());
+            //     for ([key] of Object.entries(scoreWithMultiplier)) {
+            //         idsWithScore[key] = dictJson[key];
+            //     }
+            //     var dct = getScoreFromText(PI_data);
+            //     let result = {};
+            //     for (let opportunity in dictJson) {
+            //         let value = dictJson[opportunity];
+            //         let score = intersection(dct, value);
+            //         result[opportunity] = score;
+            //     }
+            //     return result;
+            // }
+            // //take project abstract from PACS Proposals
+            // else 
+            if(PI_Abstract[fullMameWithoutComma]){
                 console.log("found");
                 let PI_data=PI_Abstract[fullMameWithoutComma];
                 let scoreWithMultiplier = findKeywords(PI_data.toLowerCase());
