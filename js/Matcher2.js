@@ -45,6 +45,27 @@ window.onload = function () {
         var result = new Object();
         var arr = []
         let scoreDict = {};
+        let idTracker={};
+        let keywrdTracker={};
+
+        const countIds=(id)=>{
+          if(id in idTracker){
+            idTracker[id]+=1;
+          }
+          else{
+            idTracker[id]=1;
+          }
+        }
+
+
+        const countOccurances=(content,key)=>{
+
+            let regexp=  new RegExp(`${key}`,'gi')  // `/${key}/g`
+            console.log(regexp);
+          let count=(content.match(regexp)||[]).length;
+          console.log(count);
+          return count;
+        }
 
         const findKeywords = (content) => {
 
@@ -53,13 +74,16 @@ window.onload = function () {
                     // console.log(key,"-----key",val,'--val');
                     if (idMapper[key]) {
                         // console.log(key,'---keyyyy');
+                        keywrdTracker[key.toLocaleLowerCase()]=countOccurances(content,key.toLowerCase());
                         for (let id of idMapper[key]) {
 
                             if (id in scoreDict) {
                                 scoreDict[id] += 8;
+                                countIds(id);
                             }
                             else {
                                 scoreDict[id] = 8;
+                                countIds(id);
                             }
                             // console.log(id);
                         }
@@ -71,9 +95,9 @@ window.onload = function () {
                             if (idMapper[keywrd] && keywrd != key) {
                                 // console.log(keywrd,"--",idMapper[keywrd]);
                                 for (let spin_id of idMapper[keywrd]) {
-                                    if (!scoreDict[spin_id]) {
-                                        // console.log(spin_id);
+                                    if (!(spin_id in scoreDict)) {
                                         scoreDict[spin_id] = 2;
+                                        // console.log(keywrd.split(' ').join('_')," ",spin_id," ",scoreDict[spin_id]);
                                     }
                                 }
                             }
@@ -92,9 +116,10 @@ window.onload = function () {
                                                 if (idMapper[keywrd] && keywrd != key) {
                                                     // console.log(keywrd,"--",idMapper[keywrd]);
                                                     for (let spin_id of idMapper[keywrd]) { //get ids for each c3 keyword
-                                                        if (!scoreDict[spin_id]) {
+                                                        if (!(spin_id in scoreDict)) {
                                                             // console.log(spin_id);
                                                             scoreDict[spin_id] = 1;
+                                                            // console.log(keywrd.split(' ').join('_')," ",spin_id, " ",scoreDict[spin_id]);
                                                         }
                                                     }
                                                 }
@@ -200,6 +225,7 @@ window.onload = function () {
                     let value = dictJson[opportunity];
                     let score = intersection(dct, value);
                     result[opportunity] = score;
+                    // console.log(opportunity," ",score);
                 }
                 return result;
               }
@@ -252,7 +278,11 @@ window.onload = function () {
                 let value = rhs[opportunity];
                 let score = intersection(dct, value);
                 result[opportunity] = score;
-            }
+                if(score>0){
+                    console.log(opportunity," ", score);
+                  }
+                }
+                // console.log(result,"result");
             return result;
         }
 
@@ -660,9 +690,14 @@ window.onload = function () {
                         for (let [key, val] of Object.entries(similarResult)) {
                             if (key in scoreDict) {
                                 // similarResult[key] = val * scoreDict[key];
-                                if (scoreDict[key] >= 8) {
+                                if (scoreDict[key] >= 8) {   //multiply the times it got repeated
+                                    //TODO - to prioritise the ids repeated more for direct keyword match
+                                    if(key in idTracker){
+                                      similarResult[key] = idTracker[key]*100 + similarResult[key];
+                                    }
+                                    else{
                                     similarResult[key] = 100 + similarResult[key];
-                                }
+                                  }}
                             }
                         }
                         for (let [key, val] of Object.entries(similarResult)) {
@@ -674,7 +709,7 @@ window.onload = function () {
                         let filteredArray=checkDeadLines(sortArray);
                         console.log(filteredArray.slice(0,20),"filtererererer");
                         let fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
-                        let final = SortBySponName(filteredArray.slice(0, 20), fullName);
+                        let final = SortBySponName(filteredArray.slice(0, 20), fullName); //do any scoring logic before sortby sponsor
                         console.log("The following abstracts found-->\n", final)
                         tableCreate(final);
                     }
