@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /network/rit/lab/researchdiv/sdat/AutomationScripts/Matchmaker/js
+cd /network/rit/lab/researchdiv/sdat/Matchmaker/js
 /network/rit/lab/researchdiv/bin/node-v12.18.3/bin/node createData.js
 /network/rit/lab/researchdiv/bin/node-v12.18.3/bin/node createDict.js
 /network/rit/lab/researchdiv/bin/node-v12.18.3/bin/node createIdArray.js
@@ -8,7 +8,7 @@ cd /network/rit/lab/researchdiv/sdat/AutomationScripts/Matchmaker/js
 /network/rit/lab/researchdiv/bin/node-v12.18.3/bin/node treeCreator.js
 /network/rit/lab/researchdiv/bin/node-v12.18.3/bin/node Keywords.js
 
-cd /network/rit/lab/researchdiv/sdat/AutomationScripts/Matchmaker/JSONs
+cd /network/rit/lab/researchdiv/sdat/Matchmaker/JSONs
 /network/rit/lab/researchdiv/bin/node-v12.18.3/bin/node newJson.js
 
 cd ..
