@@ -604,7 +604,12 @@ window.onload = function () {
                     if (key in scoreDict) {
                         // similarResult[key] = val * scoreDict[key];
                         if (scoreDict[key] >= 8) {
-                            similarResult[key] = 100 + similarResult[key];
+                            if(key in idTracker){
+                                similarResult[key] = idTracker[key]*100 + similarResult[key];
+                              }
+                              else{
+                              similarResult[key] = 100 + similarResult[key];
+                            }
                         }
                     }
                 }
@@ -614,7 +619,7 @@ window.onload = function () {
                     sortArray.push(tobj);
                 }
                 let filteredArray= checkDeadLines(sortArray);
-                console.log(filteredArray,"filtererererer");
+                // console.log(filteredArray,"filtererererer");
                let final = filteredArray.slice(0, 20);
                 console.log("The following abstracts found-->\n", final)
                 tableCreate(final);
@@ -638,7 +643,7 @@ window.onload = function () {
 
                     let profExists = checkIfnameExists(firstName, lastName);
                     if (profExists != null) {
-                        console.log("Only description related reuslts logic starts ----------------------------");
+                        // console.log("Only description related reuslts logic starts ----------------------------");
                         let scoreWithMultiplier = findKeywords(description.toLowerCase());
                         let idsWithScore = {};
                         let sortArray = [];         //Will contain all SPIN IDs with tf-idf scores in decr order
@@ -654,8 +659,13 @@ window.onload = function () {
                         for (let [key, val] of Object.entries(similarResult)) {
                             if (key in scoreDict) {
                                 // similarResult[key] = val * scoreDict[key];
-                                if (scoreDict[key] >= 8) {
+                                if (scoreDict[key] >= 8) { //TODO - to prioritise the ids repeated more for direct keyword match
+                                    if(key in idTracker){
+                                      similarResult[key] = idTracker[key]*100 + similarResult[key];
+                                    }
+                                    else{
                                     similarResult[key] = 100 + similarResult[key];
+                                  }
                                 }
                             }
                         }
@@ -666,7 +676,7 @@ window.onload = function () {
                         }
                         sortArray.sort((a, b) => b.score - a.score);
                         let filteredArray=checkDeadLines(sortArray);
-                        console.log(filteredArray,"filtererererer");
+                        // console.log(filteredArray,"filtererererer");
                         //----------------------------
                         //SPONSER SORT LOGIC STARTS
                         let fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
@@ -707,7 +717,7 @@ window.onload = function () {
                         }
                         sortArray.sort((a, b) => b.score - a.score);
                         let filteredArray=checkDeadLines(sortArray);
-                        console.log(filteredArray.slice(0,20),"filtererererer");
+                        // console.log(filteredArray.slice(0,20),"filtererererer");
                         let fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
                         let final = SortBySponName(filteredArray.slice(0, 20), fullName); //do any scoring logic before sortby sponsor
                         console.log("The following abstracts found-->\n", final)
@@ -738,8 +748,13 @@ window.onload = function () {
                     for (let [key, val] of Object.entries(similarResult)) {
                         if (key in scoreDict) {
                             // similarResult[key] = val * scoreDict[key];
-                            if (scoreDict[key] >= 8) {
+                            if (scoreDict[key] >= 8) { //TODO - to prioritise the ids repeated more for direct keyword match
+                                if(key in idTracker){
+                                  similarResult[key] = idTracker[key]*100 + similarResult[key];
+                                }
+                                else{
                                 similarResult[key] = 100 + similarResult[key];
+                              }
                             }
                         }
                     }
@@ -750,11 +765,10 @@ window.onload = function () {
                     }
                     sortArray.sort((a, b) => b.score - a.score);
                     let filteredArray=checkDeadLines(sortArray);
-                    console.log(filteredArray,"filtererererer");
+                    // console.log(filteredArray,"filtererererer");
                    let  final = filteredArray.slice(0, 20);
                     console.log("The following abstracts found-->\n", final)
                     tableCreate(final);
-
                 }
                 else {
                     alert("Invalid data");

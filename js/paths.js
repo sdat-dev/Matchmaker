@@ -15,6 +15,7 @@ const paths = {
   Proposals_csv : path.join(path.dirname(path.dirname(__dirname)), "Matchmaker","data","Proposals.csv"),
   sortedPI_SponsorMap : path.join(path.dirname(path.dirname(__dirname)), "Matchmaker","JSONs","PI_Sponsor.json"),
   ID_SponsorMap : path.join(path.dirname(path.dirname(__dirname)), "Matchmaker","JSONs","ID_Sponsor.json"),
-  PI_ProjectTitleMap:path.join(path.dirname(path.dirname(__dirname)),'Matchmaker',"JSONs","PI_ProjectTitle.json")
+  PI_ProjectTitleMap:path.join(path.dirname(path.dirname(__dirname)),'Matchmaker',"JSONs","PI_ProjectTitle.json"),
+  newJsonPath:path.join(path.dirname(path.dirname(__dirname)), "Matchmaker","dir","newJson.json")
 };
 module.exports.paths = paths;
