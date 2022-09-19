@@ -55,7 +55,9 @@ async function textScrape(url){
         // console.log("1 " +data);
         if(data){
             // console.log("3 "+ data);
+            console.log("req success");
             return data;
+            
         }
     }
     catch(error){
