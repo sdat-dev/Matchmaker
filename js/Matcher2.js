@@ -21,10 +21,10 @@ window.onload = function () {
     let ID_Sponsor_MapPath = axios.get("JSONs/ID_Sponsor.json");
     let PI_ProjectTitleMap = axios.get("JSONs/PI_ProjectTitle.json");
     let PI_AbstractMap = axios.get('JSONs/PI_Abstract.json'); // created this from pacs test.js(not in this repo)
-    let spin_DataMap=axios.get('dir/newJson.json');
+    let spin_DataMap = axios.get('dir/newJson.json');
     let datarequest = axios.get(datarequestURL);
 
-    axios.all([datarequest, tree3File, tree2File, tree1File, keyIdArrFile, PI_Data_MapFile, PI_Sponsor_MapFile, ID_Sponsor_MapPath, PI_ProjectTitleMap,PI_AbstractMap,spin_DataMap]).then(axios.spread((...responses) => {
+    axios.all([datarequest, tree3File, tree2File, tree1File, keyIdArrFile, PI_Data_MapFile, PI_Sponsor_MapFile, ID_Sponsor_MapPath, PI_ProjectTitleMap, PI_AbstractMap, spin_DataMap]).then(axios.spread((...responses) => {
         let dictJson = responses[0].data;
         let tree3 = responses[1].data;
         let tree2 = responses[2].data;
@@ -34,8 +34,8 @@ window.onload = function () {
         let PI_Sponsor = responses[6].data;
         let ID_Sponsor = responses[7].data;
         let PI_ProjectTitleData = responses[8].data;
-        let PI_Abstract= responses[9].data;
-        let spinData=responses[10].data;
+        let PI_Abstract = responses[9].data;
+        let spinData = responses[10].data;
 
         const { convert } = require('html-to-text');
         const natural = require('natural/lib/natural/tfidf');
@@ -45,36 +45,40 @@ window.onload = function () {
         var result = new Object();
         var arr = []
         let scoreDict = {};
-        let idTracker={};
-        let keywrdTracker={};
+        let idTracker = {};
+        let keywrdTracker = {};
 
-        const countIds=(id)=>{
-          if(id in idTracker){
-            idTracker[id]+=1;
-          }
-          else{
-            idTracker[id]=1;
-          }
+        const countIds = (id) => {
+            if (id in idTracker) {
+                idTracker[id] += 1;
+            }
+            else {
+                idTracker[id] = 1;
+            }
         }
 
 
-        const countOccurances=(content,key)=>{
+        const countOccurances = (content, key) => {
 
-            let regexp=  new RegExp(`${key}`,'gi')  // `/${key}/g`
+            let regexp = new RegExp(`${key}`, 'gi')  // `/${key}/g`
             console.log(regexp);
-          let count=(content.match(regexp)||[]).length;
-          console.log(count);
-          return count;
+            let count = (content.match(regexp) || []).length;
+            console.log(count);
+            return count;
         }
 
         const findKeywords = (content) => {
+
+            scoreDict = {};
+            idTracker = {};
+            keywrdTracker = {};
 
             for (const [key, val] of Object.entries(tree3)) {
                 if (content.includes(key.toLowerCase())) {
                     // console.log(key,"-----key",val,'--val');
                     if (idMapper[key]) {
                         // console.log(key,'---keyyyy');
-                        keywrdTracker[key.toLocaleLowerCase()]=countOccurances(content,key.toLowerCase());
+                        keywrdTracker[key.toLocaleLowerCase()] = countOccurances(content, key.toLowerCase());
                         for (let id of idMapper[key]) {
 
                             if (id in scoreDict) {
@@ -212,9 +216,9 @@ window.onload = function () {
             // }
             // //take project abstract from PACS Proposals
             // else 
-            if(PI_Abstract[fullMameWithoutComma]){
+            if (PI_Abstract[fullMameWithoutComma]) {
                 console.log("found");
-                let PI_data=PI_Abstract[fullMameWithoutComma];
+                let PI_data = PI_Abstract[fullMameWithoutComma];
                 let scoreWithMultiplier = findKeywords(PI_data.toLowerCase());
                 for ([key] of Object.entries(scoreWithMultiplier)) {
                     idsWithScore[key] = dictJson[key];
@@ -228,48 +232,48 @@ window.onload = function () {
                     // console.log(opportunity," ",score);
                 }
                 return result;
-              }
+            }
             else {
                 return null;
             }
 
         }
         // incase of not match at all TODO function
-        function SortBySponNameForNoMatch(array,name,keyMatchFlag) {
+        function SortBySponNameForNoMatch(array, name, keyMatchFlag) {
             let retArray = [];
             let set = new Set();
-            if(!PI_Sponsor.hasOwnProperty(name)){
+            if (!PI_Sponsor.hasOwnProperty(name)) {
                 return array;
-            }else{
-              let sponsCheckFlag=false;
-                for(let obj of PI_Sponsor[name]){
+            } else {
+                let sponsCheckFlag = false;
+                for (let obj of PI_Sponsor[name]) {
                     console.log(obj);
                 }
                 // console.log("--------------\nSponsorNamesOfPI-->\n" + Object.values(PI_Sponsor[name]) + "\n\n\nOp Sponsor with ID-->\n");
-                for(let obj of PI_Sponsor[name]){
-                    for(let op of array){
+                for (let obj of PI_Sponsor[name]) {
+                    for (let op of array) {
                         // console.log(ID_Sponsor[op.id]);
-                        if(ID_Sponsor[op.id] == Object.keys(obj)[0]){
-                            console.log(Object.keys(obj)[0]+"   ---Matched---")
+                        if (ID_Sponsor[op.id] == Object.keys(obj)[0]) {
+                            console.log(Object.keys(obj)[0] + "   ---Matched---")
                             retArray.push(op);
                             set.add(op.id);
-                            sponsCheckFlag=true;
+                            sponsCheckFlag = true;
                         }
                     }
                 }
-                for(let obj of array){
-                    if(!set.has(obj.id)){
+                for (let obj of array) {
+                    if (!set.has(obj.id)) {
                         retArray.push(obj);
                     }
                 }
                 //check for 2 flags i.e keymatch and spons match
-                if(sponsCheckFlag==false && keyMatchFlag==false){
-  
+                if (sponsCheckFlag == false && keyMatchFlag == false) {
+
                 }
                 return retArray;
             }
         }
-  
+
 
         function checkSimilarity2Param(lhs, rhs) {
             let result = {};
@@ -278,11 +282,11 @@ window.onload = function () {
                 let value = rhs[opportunity];
                 let score = intersection(dct, value);
                 result[opportunity] = score;
-                if(score>0){
-                    console.log(opportunity," ", score);
-                  }
+                if (score > 0) {
+                    console.log(opportunity, " ", score);
                 }
-                // console.log(result,"result");
+            }
+            // console.log(result,"result");
             return result;
         }
 
@@ -296,7 +300,7 @@ window.onload = function () {
             return retVal;
         }
 
-        const checkDeadLines=(SortArraydata)=>{
+        const checkDeadLines = (SortArraydata) => {
 
             console.log(SortArraydata.length);
             let solicitations;
@@ -304,43 +308,43 @@ window.onload = function () {
             let today = new Date();
             let deadlineDate = "";
             let Estimated_Funding = "";
-            let filteredResults=[];
-          
-                 for(let idObj of SortArraydata){
-                  flag = false;
-                  // console.log(idObj);
-                  let idval=idObj?.id;
-                  // console.log(idval);
-                  if(spinData[idval]){
-                  let data=  spinData[idval];
-    
-                  if (data.NextDeadlineDate != null) {
-                    if (data.NextDeadlineDate.length <= 11) {
-                        dueDate = data.NextDeadlineDate;
-                        deadlineDate = new Date(data.NextDeadlineDate).toLocaleDateString();
-                    }
-                    else {
-                        var dateArr = data.NextDeadlineDate.split(" ");
-                        dueDate = data.NextDeadlineDate.substring(1, 11);
-                        deadlineDate = new Date(dateArr[0]).toLocaleDateString();
-                    }
-                } else {
-                    dueDate = "Continuous Submission/Contact the Program Officer"
-                    flag = true;
-                }
-                if (dueDate != "Continuous Submission/Contact the Program Officer") {
-                    if (Date.parse(dueDate) > Date.parse(today)) {
+            let filteredResults = [];
+
+            for (let idObj of SortArraydata) {
+                flag = false;
+                // console.log(idObj);
+                let idval = idObj?.id;
+                // console.log(idval);
+                if (spinData[idval]) {
+                    let data = spinData[idval];
+
+                    if (data.NextDeadlineDate != null) {
+                        if (data.NextDeadlineDate.length <= 11) {
+                            dueDate = data.NextDeadlineDate;
+                            deadlineDate = new Date(data.NextDeadlineDate).toLocaleDateString();
+                        }
+                        else {
+                            var dateArr = data.NextDeadlineDate.split(" ");
+                            dueDate = data.NextDeadlineDate.substring(1, 11);
+                            deadlineDate = new Date(dateArr[0]).toLocaleDateString();
+                        }
+                    } else {
+                        dueDate = "Continuous Submission/Contact the Program Officer"
                         flag = true;
-                        dueDate = deadlineDate;
+                    }
+                    if (dueDate != "Continuous Submission/Contact the Program Officer") {
+                        if (Date.parse(dueDate) > Date.parse(today)) {
+                            flag = true;
+                            dueDate = deadlineDate;
+                        }
+                    }
+                    if (flag) {
+                        filteredResults.push(idObj);
                     }
                 }
-                if (flag){
-                    filteredResults.push(idObj);
-                }
-                }
-              }
-                console.log(filteredResults.length,"FILTEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-                return filteredResults;
+            }
+            console.log(filteredResults.length, "FILTEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+            return filteredResults;
             //here data is sorted ID array based on score
         }
         function generateAccordianContent(data) {
@@ -545,6 +549,9 @@ window.onload = function () {
             axios.all([datarequest]).then(axios.spread((...responses) => {
                 let solicitations = responses[0].data;
                 let htmlVal = getResultData(data, solicitations);
+                while (maincontentContainer.firstChild) {
+                    maincontentContainer.removeChild(maincontentContainer.lastChild)
+                }
                 maincontentContainer.appendChild(htmlVal);
             })).catch(errors => {
                 console.log(errors);
@@ -564,7 +571,7 @@ window.onload = function () {
                 for (let obj of PI_Sponsor[name]) {
                     for (let op of array) {
                         // console.log(ID_Sponsor[op.id]);
-                        if (ID_Sponsor[op.id].includes( Object.keys(obj)[0])) {
+                        if (ID_Sponsor[op.id].includes(Object.keys(obj)[0])) {
                             console.log(Object.keys(obj)[0] + "   ---Matched---")
                             retArray.push(op);
                             set.add(op.id);
@@ -604,11 +611,11 @@ window.onload = function () {
                     if (key in scoreDict) {
                         // similarResult[key] = val * scoreDict[key];
                         if (scoreDict[key] >= 8) {
-                            if(key in idTracker){
-                                similarResult[key] = idTracker[key]*100 + similarResult[key];
-                              }
-                              else{
-                              similarResult[key] = 100 + similarResult[key];
+                            if (key in idTracker) {
+                                similarResult[key] = idTracker[key] * 100 + similarResult[key];
+                            }
+                            else {
+                                similarResult[key] = 100 + similarResult[key];
                             }
                         }
                     }
@@ -618,9 +625,10 @@ window.onload = function () {
                     // tobj[key]={score:val};
                     sortArray.push(tobj);
                 }
-                let filteredArray= checkDeadLines(sortArray);
+                sortArray.sort((a, b) => b.score - a.score);
+                let filteredArray = checkDeadLines(sortArray);
                 // console.log(filteredArray,"filtererererer");
-               let final = filteredArray.slice(0, 20);
+                let final = filteredArray.slice(0, 20);
                 console.log("The following abstracts found-->\n", final)
                 tableCreate(final);
             });
@@ -660,12 +668,12 @@ window.onload = function () {
                             if (key in scoreDict) {
                                 // similarResult[key] = val * scoreDict[key];
                                 if (scoreDict[key] >= 8) { //TODO - to prioritise the ids repeated more for direct keyword match
-                                    if(key in idTracker){
-                                      similarResult[key] = idTracker[key]*100 + similarResult[key];
+                                    if (key in idTracker) {
+                                        similarResult[key] = idTracker[key] * 100 + similarResult[key];
                                     }
-                                    else{
-                                    similarResult[key] = 100 + similarResult[key];
-                                  }
+                                    else {
+                                        similarResult[key] = 100 + similarResult[key];
+                                    }
                                 }
                             }
                         }
@@ -675,7 +683,7 @@ window.onload = function () {
                             sortArray.push(tobj);
                         }
                         sortArray.sort((a, b) => b.score - a.score);
-                        let filteredArray=checkDeadLines(sortArray);
+                        let filteredArray = checkDeadLines(sortArray);
                         // console.log(filteredArray,"filtererererer");
                         //----------------------------
                         //SPONSER SORT LOGIC STARTS
@@ -702,12 +710,13 @@ window.onload = function () {
                                 // similarResult[key] = val * scoreDict[key];
                                 if (scoreDict[key] >= 8) {   //multiply the times it got repeated
                                     //TODO - to prioritise the ids repeated more for direct keyword match
-                                    if(key in idTracker){
-                                      similarResult[key] = idTracker[key]*100 + similarResult[key];
+                                    if (key in idTracker) {
+                                        similarResult[key] = idTracker[key] * 100 + similarResult[key];
                                     }
-                                    else{
-                                    similarResult[key] = 100 + similarResult[key];
-                                  }}
+                                    else {
+                                        similarResult[key] = 100 + similarResult[key];
+                                    }
+                                }
                             }
                         }
                         for (let [key, val] of Object.entries(similarResult)) {
@@ -716,7 +725,7 @@ window.onload = function () {
                             sortArray.push(tobj);
                         }
                         sortArray.sort((a, b) => b.score - a.score);
-                        let filteredArray=checkDeadLines(sortArray);
+                        let filteredArray = checkDeadLines(sortArray);
                         // console.log(filteredArray.slice(0,20),"filtererererer");
                         let fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
                         let final = SortBySponName(filteredArray.slice(0, 20), fullName); //do any scoring logic before sortby sponsor
@@ -749,12 +758,12 @@ window.onload = function () {
                         if (key in scoreDict) {
                             // similarResult[key] = val * scoreDict[key];
                             if (scoreDict[key] >= 8) { //TODO - to prioritise the ids repeated more for direct keyword match
-                                if(key in idTracker){
-                                  similarResult[key] = idTracker[key]*100 + similarResult[key];
+                                if (key in idTracker) {
+                                    similarResult[key] = idTracker[key] * 100 + similarResult[key];
                                 }
-                                else{
-                                similarResult[key] = 100 + similarResult[key];
-                              }
+                                else {
+                                    similarResult[key] = 100 + similarResult[key];
+                                }
                             }
                         }
                     }
@@ -764,9 +773,9 @@ window.onload = function () {
                         sortArray.push(tobj);
                     }
                     sortArray.sort((a, b) => b.score - a.score);
-                    let filteredArray=checkDeadLines(sortArray);
+                    let filteredArray = checkDeadLines(sortArray);
                     // console.log(filteredArray,"filtererererer");
-                   let  final = filteredArray.slice(0, 20);
+                    let final = filteredArray.slice(0, 20);
                     console.log("The following abstracts found-->\n", final)
                     tableCreate(final);
                 }
