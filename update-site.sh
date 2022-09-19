@@ -15,6 +15,6 @@ cd ..
 git add -A
 git pull
 git config user.name "sdat-dev"
-git config user.email "sdat-dev@albany.edu"
+git config user.email "sdat@albany.edu"
 git commit -m "Auto commit due to data change"
-git push https://sdat-dev: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@github.com/sdat-dev/Matchmaker.git
+git push https://sdat-dev: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@github.com/sdat-dev/Matchmaker.git
