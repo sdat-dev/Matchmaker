@@ -18,5 +18,4 @@ git pull
 git config user.name "RamkishoreBandla"
 git config user.email "rbandla@albany.edu"
 git commit -m "auto commit due to data change"
-git push
-
+git push https://sdat-dev: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@github.com/sdat-dev/Matchmaker.git
