@@ -61,9 +61,9 @@ window.onload = function () {
         const countOccurances = (content, key) => {
 
             let regexp = new RegExp(`${key}`, 'gi')  // `/${key}/g`
-            console.log(regexp);
+            // console.log(regexp);
             let count = (content.match(regexp) || []).length;
-            console.log(count);
+            // console.log(count);
             return count;
         }
 
@@ -94,7 +94,7 @@ window.onload = function () {
 
                         // console.log(idMapper[key].length);
                         //TODO logic for scoring and matching spin content for cousins
-                        console.log(val, "--------------------value");
+                        // console.log(val, "--------------------value");
                         for (let keywrd of tree2[val]) { //for all children of level 2
                             if (idMapper[keywrd] && keywrd != key) {
                                 // console.log(keywrd,"--",idMapper[keywrd]);
@@ -113,7 +113,7 @@ window.onload = function () {
                                 // console.log(l1key);
                                 for (let keyterm of l1val) {
                                     if (keyterm != val) {
-                                        console.log(keyterm);
+                                        // console.log(keyterm);
                                         //map ids start ------
                                         if (tree2[keyterm]) {
                                             for (let keywrd of tree2[keyterm]) { //go through  children of level 2
@@ -282,9 +282,9 @@ window.onload = function () {
                 let value = rhs[opportunity];
                 let score = intersection(dct, value);
                 result[opportunity] = score;
-                if (score > 0) {
-                    console.log(opportunity, " ", score);
-                }
+                // if (score > 0) {
+                //     console.log(opportunity, " ", score);
+                // }
             }
             // console.log(result,"result");
             return result;
@@ -302,7 +302,7 @@ window.onload = function () {
 
         const checkDeadLines = (SortArraydata) => {
 
-            console.log(SortArraydata.length);
+            // console.log(SortArraydata.length);
             let solicitations;
             let flag = false;
             let today = new Date();
@@ -343,7 +343,7 @@ window.onload = function () {
                     }
                 }
             }
-            console.log(filteredResults.length, "FILTEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+            // console.log(filteredResults.length, "FILTEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
             return filteredResults;
             //here data is sorted ID array based on score
         }
