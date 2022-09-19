@@ -69,6 +69,10 @@ window.onload = function () {
 
         const findKeywords = (content) => {
 
+            scoreDict={};
+            idTracker={};
+            keywrdTracker={};
+
             for (const [key, val] of Object.entries(tree3)) {
                 if (content.includes(key.toLowerCase())) {
                     // console.log(key,"-----key",val,'--val');
@@ -545,6 +549,9 @@ window.onload = function () {
             axios.all([datarequest]).then(axios.spread((...responses) => {
                 let solicitations = responses[0].data;
                 let htmlVal = getResultData(data, solicitations);
+                while(maincontentContainer.firstChild){
+                    maincontentContainer.removeChild(maincontentContainer.lastChild)
+                  }
                 maincontentContainer.appendChild(htmlVal);
             })).catch(errors => {
                 console.log(errors);
@@ -618,6 +625,7 @@ window.onload = function () {
                     // tobj[key]={score:val};
                     sortArray.push(tobj);
                 }
+                sortArray.sort((a, b) => b.score - a.score);
                 let filteredArray= checkDeadLines(sortArray);
                 // console.log(filteredArray,"filtererererer");
                let final = filteredArray.slice(0, 20);
