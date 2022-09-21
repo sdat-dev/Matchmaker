@@ -78,7 +78,7 @@ window.onload = function () {
                     // console.log(key,"-----key",val,'--val');
                     if (idMapper[key]) {
                         // console.log(key,'---keyyyy');
-                        keywrdTracker[key.toLocaleLowerCase()] = countOccurances(content, key.toLowerCase());
+                        keywrdTracker[key] = countOccurances(content, key.toLowerCase());
                         for (let id of idMapper[key]) {
 
                             if (id in scoreDict) {
@@ -606,19 +606,35 @@ window.onload = function () {
                     similarResult[keys] = similarResult[keys] / 4;
                 }
                 // console.log('---------------');
+                let directMatchIds={};
+                for(let [kkey,kval] of Object.entries(keywrdTracker)){
+                    for(let mapId of idMapper[kkey]){
+                      if(directMatchIds[mapId]){  //case where id is repeated for other keywords
+                        directMatchIds[mapId]+=(100*(1-(0.5)**kval))/0.5;
+                      }
+                      else{
+                        directMatchIds[mapId]=(100*(1-(0.5)**kval))/0.5;
+                      }
+                    }
+
+                }
 
                 for (let [key, val] of Object.entries(similarResult)) {
-                    if (key in scoreDict) {
-                        // similarResult[key] = val * scoreDict[key];
-                        if (scoreDict[key] >= 8) {
-                            if (key in idTracker) {
-                                similarResult[key] = idTracker[key] * 100 + similarResult[key];
-                            }
-                            else {
-                                similarResult[key] = 100 + similarResult[key];
-                            }
-                        }
-                    }
+                    if(key in directMatchIds){
+                        // console.log(val);
+                        similarResult[key]+=directMatchIds[key];
+                      }
+                    // if (key in scoreDict) {
+                    //     // similarResult[key] = val * scoreDict[key];
+                    //     if (scoreDict[key] >= 8) {
+                    //         if (key in idTracker) {
+                    //             similarResult[key] = idTracker[key] * 100 + similarResult[key];
+                    //         }
+                    //         else {
+                    //             similarResult[key] = 100 + similarResult[key];
+                    //         }
+                    //     }
+                    // }
                 }
                 for (let [key, val] of Object.entries(similarResult)) {
                     let tobj = { id: key, score: val }
@@ -664,18 +680,34 @@ window.onload = function () {
                         for (const [keys, vals] of Object.entries(similarResult)) {
                             similarResult[keys] = similarResult[keys] / 4;
                         }
-                        for (let [key, val] of Object.entries(similarResult)) {
-                            if (key in scoreDict) {
-                                // similarResult[key] = val * scoreDict[key];
-                                if (scoreDict[key] >= 8) { //TODO - to prioritise the ids repeated more for direct keyword match
-                                    if (key in idTracker) {
-                                        similarResult[key] = idTracker[key] * 100 + similarResult[key];
-                                    }
-                                    else {
-                                        similarResult[key] = 100 + similarResult[key];
-                                    }
-                                }
+                        let directMatchIds={};
+                        for(let [kkey,kval] of Object.entries(keywrdTracker)){
+                            for(let mapId of idMapper[kkey]){
+                              if(directMatchIds[mapId]){  //case where id is repeated for other keywords
+                                directMatchIds[mapId]+=(100*(1-(0.5)**kval))/0.5;
+                              }
+                              else{
+                                directMatchIds[mapId]=(100*(1-(0.5)**kval))/0.5;
+                              }
                             }
+        
+                        }
+                        for (let [key, val] of Object.entries(similarResult)) {
+                            if(key in directMatchIds){
+                                // console.log(val);
+                                similarResult[key]+=directMatchIds[key];
+                              }
+                            // if (key in scoreDict) {
+                            //     // similarResult[key] = val * scoreDict[key];
+                            //     if (scoreDict[key] >= 8) { //TODO - to prioritise the ids repeated more for direct keyword match
+                            //         if (key in idTracker) {
+                            //             similarResult[key] = idTracker[key] * 100 + similarResult[key];
+                            //         }
+                            //         else {
+                            //             similarResult[key] = 100 + similarResult[key];
+                            //         }
+                            //     }
+                            // }
                         }
                         for (let [key, val] of Object.entries(similarResult)) {
                             let tobj = { id: key, score: val }
@@ -705,19 +737,35 @@ window.onload = function () {
                         for (const [keys, vals] of Object.entries(similarResult)) {
                             similarResult[keys] = similarResult[keys] / 4;
                         }
-                        for (let [key, val] of Object.entries(similarResult)) {
-                            if (key in scoreDict) {
-                                // similarResult[key] = val * scoreDict[key];
-                                if (scoreDict[key] >= 8) {   //multiply the times it got repeated
-                                    //TODO - to prioritise the ids repeated more for direct keyword match
-                                    if (key in idTracker) {
-                                        similarResult[key] = idTracker[key] * 100 + similarResult[key];
-                                    }
-                                    else {
-                                        similarResult[key] = 100 + similarResult[key];
-                                    }
-                                }
+                        let directMatchIds={};
+                        for(let [kkey,kval] of Object.entries(keywrdTracker)){
+                            for(let mapId of idMapper[kkey]){
+                              if(directMatchIds[mapId]){  //case where id is repeated for other keywords
+                                directMatchIds[mapId]+=(100*(1-(0.5)**kval))/0.5;
+                              }
+                              else{
+                                directMatchIds[mapId]=(100*(1-(0.5)**kval))/0.5;
+                              }
                             }
+        
+                        }
+                        for (let [key, val] of Object.entries(similarResult)) {
+                            if(key in directMatchIds){
+                                // console.log(val);
+                                similarResult[key]+=directMatchIds[key];
+                              }
+                            // if (key in scoreDict) {
+                            //     // similarResult[key] = val * scoreDict[key];
+                            //     if (scoreDict[key] >= 8) {   //multiply the times it got repeated
+                            //         //TODO - to prioritise the ids repeated more for direct keyword match
+                            //         if (key in idTracker) {
+                            //             similarResult[key] = idTracker[key] * 100 + similarResult[key];
+                            //         }
+                            //         else {
+                            //             similarResult[key] = 100 + similarResult[key];
+                            //         }
+                            //     }
+                            // }
                         }
                         for (let [key, val] of Object.entries(similarResult)) {
                             let tobj = { id: key, score: val }
@@ -754,18 +802,35 @@ window.onload = function () {
                         similarResult[keys] = similarResult[keys] / 4;
                     }
 
-                    for (let [key, val] of Object.entries(similarResult)) {
-                        if (key in scoreDict) {
-                            // similarResult[key] = val * scoreDict[key];
-                            if (scoreDict[key] >= 8) { //TODO - to prioritise the ids repeated more for direct keyword match
-                                if (key in idTracker) {
-                                    similarResult[key] = idTracker[key] * 100 + similarResult[key];
-                                }
-                                else {
-                                    similarResult[key] = 100 + similarResult[key];
-                                }
-                            }
+                    let directMatchIds={};
+                    for(let [kkey,kval] of Object.entries(keywrdTracker)){
+                        for(let mapId of idMapper[kkey]){
+                          if(directMatchIds[mapId]){  //case where id is repeated for other keywords
+                            directMatchIds[mapId]+=(100*(1-(0.5)**kval))/0.5;
+                          }
+                          else{
+                            directMatchIds[mapId]=(100*(1-(0.5)**kval))/0.5;
+                          }
                         }
+    
+                    }
+
+                    for (let [key, val] of Object.entries(similarResult)) {
+                        if(key in directMatchIds){
+                            // console.log(val);
+                            similarResult[key]+=directMatchIds[key];
+                          }
+                        // if (key in scoreDict) {
+                        //     // similarResult[key] = val * scoreDict[key];
+                        //     if (scoreDict[key] >= 8) { //TODO - to prioritise the ids repeated more for direct keyword match
+                        //         if (key in idTracker) {
+                        //             similarResult[key] = idTracker[key] * 100 + similarResult[key];
+                        //         }
+                        //         else {
+                        //             similarResult[key] = 100 + similarResult[key];
+                        //         }
+                        //     }
+                        // }
                     }
                     for (let [key, val] of Object.entries(similarResult)) {
                         let tobj = { id: key, score: val }
