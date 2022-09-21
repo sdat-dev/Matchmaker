@@ -18,5 +18,4 @@ git pull
 git config user.name "sdat-dev"
 git config user.email "sdat@albany.edu"
 git commit -m "auto commit due to data change"
-git push origin main
-#https://sdat-dev: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@github.com/sdat-dev/Matchmaker.git
+git push https://sdat-dev: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@github.com/sdat-dev/Matchmaker.git
