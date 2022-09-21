@@ -624,6 +624,11 @@ window.onload = function () {
                         // console.log(val);
                         similarResult[key]+=directMatchIds[key];
                       }
+                      if(key in scoreDict){ //for sibling case
+                        if(scoreDict[key]>=2 && scoreDict[key]<8){
+                          similarResult[key]+=(10*(1-(0.5)**scoreDict[key]))/0.5;
+                        }
+                      }
                     // if (key in scoreDict) {
                     //     // similarResult[key] = val * scoreDict[key];
                     //     if (scoreDict[key] >= 8) {
@@ -697,6 +702,11 @@ window.onload = function () {
                                 // console.log(val);
                                 similarResult[key]+=directMatchIds[key];
                               }
+                              if(key in scoreDict){ //for sibling case
+                                if(scoreDict[key]>=2 && scoreDict[key]<8){
+                                  similarResult[key]+=(10*(1-(0.5)**scoreDict[key]))/0.5;
+                                }
+                              }
                             // if (key in scoreDict) {
                             //     // similarResult[key] = val * scoreDict[key];
                             //     if (scoreDict[key] >= 8) { //TODO - to prioritise the ids repeated more for direct keyword match
@@ -753,6 +763,11 @@ window.onload = function () {
                             if(key in directMatchIds){
                                 // console.log(val);
                                 similarResult[key]+=directMatchIds[key];
+                              }
+                              if(key in scoreDict){ //for sibling case
+                                if(scoreDict[key]>=2 && scoreDict[key]<8){
+                                  similarResult[key]+=(10*(1-(0.5)**scoreDict[key]))/0.5;
+                                }
                               }
                             // if (key in scoreDict) {
                             //     // similarResult[key] = val * scoreDict[key];
@@ -819,6 +834,11 @@ window.onload = function () {
                         if(key in directMatchIds){
                             // console.log(val);
                             similarResult[key]+=directMatchIds[key];
+                          }
+                          if(key in scoreDict){ //for sibling case
+                            if(scoreDict[key]>=2 && scoreDict[key]<8){
+                              similarResult[key]+=(10*(1-(0.5)**scoreDict[key]))/0.5;
+                            }
                           }
                         // if (key in scoreDict) {
                         //     // similarResult[key] = val * scoreDict[key];
