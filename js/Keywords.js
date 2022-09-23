@@ -2,14 +2,25 @@
 const fs = require('fs');
 var path = require('path');
 const { paths } = require("./paths.js");
-// var directory = 'C:/Users/sg797751/Desktop/GIt/Matchmaker/JSONs';
-// let file_abs_path = path.join(directory, 'OriginalSPIN_keys.json');     //Get the file from https://spin.infoedglobal.com/Keywords/MillerList
-
+const axios=require('axios');
 const OriginalSPIN_keysFile = paths.OriginalSPIN_keys;
 const SPIN_KeywordsFile = paths.SPIN_Keywords;
 
-let file = fs.readFileSync(OriginalSPIN_keysFile);
+const getSPINKeyWordsdata=async()=>{
 
+    let results=await axios.get('https://spin.infoedglobal.com/Keywords/MillerList');
+    // console.log(results.data);
+    fs.writeFileSync(OriginalSPIN_keysFile,JSON.stringify(results.data));
+    console.log("first");
+
+
+// var directory = 'C:/Users/sg797751/Desktop/GIt/Matchmaker/JSONs';
+// let file_abs_path = path.join(directory, 'OriginalSPIN_keys.json');     //Get the file from https://spin.infoedglobal.com/Keywords/MillerList
+
+
+
+let file = fs.readFileSync(OriginalSPIN_keysFile);
+console.log("second");
 let data = JSON.parse(file);
 
 let object = {};
@@ -82,3 +93,7 @@ for(const [key, value] of Object.entries(l3)){
 }
 
 fs.writeFileSync(SPIN_KeywordsFile,JSON.stringify(l3newdata));
+
+}
+
+getSPINKeyWordsdata();
