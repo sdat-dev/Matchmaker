@@ -67,6 +67,29 @@ window.onload = function () {
             return count;
         }
 
+        const hasMatch = (dictKey, inputContent) => {
+            let flag = false;
+            const keyWords = dictKey.toLowerCase().split('/')
+            for (let i of keyWords) {
+              if (i.includes("artificial intelligence")){
+              console.log(i,"i--->")
+              }
+            //return keyWords.some((keyWord) => inputContent.toLowerCase().includes(keyWord))
+            if (inputContent.toLowerCase().includes(i)) {
+                flag = true;
+                console.log(i,"i2-->")
+                break;
+            }
+          }
+          if (flag === false){
+            return false
+          }
+          else
+          {
+            return true
+          }
+        }
+
         const findKeywords = (content) => {
 
             scoreDict = {};
@@ -74,7 +97,7 @@ window.onload = function () {
             keywrdTracker = {};
 
             for (const [key, val] of Object.entries(tree3)) {
-                if (content.includes(key.toLowerCase())) {
+                if (content.includes(key.toLowerCase()) || hasMatch(key, content)) {
                     // console.log(key,"-----key",val,'--val');
                     if (idMapper[key]) {
                         // console.log(key,'---keyyyy');
