@@ -99,6 +99,7 @@ window.onload = function () {
         }
         }
         // content is lowercase
+        //|| hasMatch(key, content)
         const findKeywords = (content) => {
 
             scoreDict = {};
@@ -106,8 +107,8 @@ window.onload = function () {
             keywrdTracker = {};
 
             for (const [key, val] of Object.entries(tree3)) {
-                if (content.includes(key.toLowerCase()) || hasMatch(key, content)) {
-                    // console.log(key,"-----key",val,'--val');
+                if (content.includes(key.toLowerCase()) ) {
+                    console.log(key,"-----key",val,'--val');
                     if (idMapper[key]) {
                         // console.log(key,'---keyyyy');
                         if (!(key in keywrdTracker)) {
@@ -174,6 +175,7 @@ window.onload = function () {
             }
             //some change
             // console.log(scoreDict);
+            console.log(keywrdTracker);
             return scoreDict;
         }
 
@@ -605,11 +607,12 @@ window.onload = function () {
                 for (let obj of PI_Sponsor[name]) {
                     for (let op of array) {
                         // console.log(ID_Sponsor[op.id]);
+                        if(ID_Sponsor[op.id]){
                         if (ID_Sponsor[op.id].includes(Object.keys(obj)[0])) {
                             console.log(Object.keys(obj)[0] + "   ---Matched---")
                             retArray.push(op);
                             set.add(op.id);
-                        }
+                        }}
                     }
                 }
                 for (let obj of array) {
