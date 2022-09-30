@@ -89,6 +89,9 @@ async function main() {
                 }
     
         }
+        else{
+            newTree32[key]=val;
+        }
     }
     else{
         newTree32[key]=val;
