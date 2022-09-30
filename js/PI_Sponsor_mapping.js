@@ -10,6 +10,7 @@ let dataParse = JSON.parse(dataPath);
 let data = dataParse.Programs;
 let ID_SponsorMapPath = paths.ID_SponsorMap;
 let PI_ProjectTitlePath=paths.PI_ProjectTitleMap;
+let PI_DepartmentPath=paths.PI_Departmentpath;
 var ID_Sponsor = {};
 let PI_ProjTitle={};
 
@@ -111,3 +112,14 @@ fs.writeFileSync(ID_SponsorMapPath,JSON.stringify(ID_Sponsor));
   // console.log(PI_ProjTitle);
 
 
+
+  //create a mapper for PI name and department
+
+  let PI_DepartmentMapper={};
+
+  for(let pi_dept_obj of jsondata){
+    PI_DepartmentMapper[pi_dept_obj['Principal Investigator'].toLowerCase()]=pi_dept_obj['Lead Department'];
+  }
+
+  // console.log(PI_DepartmentMapper);
+fs.writeFileSync(PI_DepartmentPath,JSON.stringify(PI_DepartmentMapper));

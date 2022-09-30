@@ -22,9 +22,11 @@ window.onload = function () {
     let PI_ProjectTitleMap = axios.get("JSONs/PI_ProjectTitle.json");
     let PI_AbstractMap = axios.get('JSONs/PI_Abstract.json'); // created this from pacs test.js(not in this repo)
     let spin_DataMap = axios.get('dir/newJson.json');
+    let PI_DepartmentFile = axios.get('JSONs/PI_Department.json');
+
     let datarequest = axios.get(datarequestURL);
 
-    axios.all([datarequest, tree3File, tree2File, tree1File, keyIdArrFile, PI_Data_MapFile, PI_Sponsor_MapFile, ID_Sponsor_MapPath, PI_ProjectTitleMap, PI_AbstractMap, spin_DataMap]).then(axios.spread((...responses) => {
+    axios.all([datarequest, tree3File, tree2File, tree1File, keyIdArrFile, PI_Data_MapFile, PI_Sponsor_MapFile, ID_Sponsor_MapPath, PI_ProjectTitleMap, PI_AbstractMap, spin_DataMap, PI_DepartmentFile]).then(axios.spread((...responses) => {
         let dictJson = responses[0].data;
         let tree3 = responses[1].data;
         let tree2 = responses[2].data;
@@ -36,6 +38,7 @@ window.onload = function () {
         let PI_ProjectTitleData = responses[8].data;
         let PI_Abstract = responses[9].data;
         let spinData = responses[10].data;
+        let PI_DepartmentData = responses[11].data;
 
         const { convert } = require('html-to-text');
         const natural = require('natural/lib/natural/tfidf');
@@ -59,14 +62,44 @@ window.onload = function () {
 
 
         const countOccurances = (content, key) => {
-
+            try{
             let regexp = new RegExp(`${key}`, 'gi')  // `/${key}/g`
-            // console.log(regexp);
+            console.log(regexp);
             let count = (content.match(regexp) || []).length;
             // console.log(count);
             return count;
+            }
+            catch(e){
+                return 0;
+            }
         }
+        const hasMatch = (dictKey, inputContent) => {
+            try{
+            let flag = false;
+            const keyWords = dictKey.toLowerCase().split('/')
 
+            for (let i = 0; i < keyWords.length; i++) {
+                // console.log(keyWords);
+                if (inputContent.toLowerCase().indexOf(keyWords[i]) != -1) {
+                    flag = true;
+                    let keyTocheck = keyWords[i];
+                    keywrdTracker[dictKey] = countOccurances(inputContent, keyTocheck.toLowerCase());
+                    break;
+                }
+            }
+            if (flag === false) {
+                return false
+            }
+            else {
+                return true
+            }
+        }
+        catch(e){
+            return false;
+        }
+        }
+        // content is lowercase
+        //|| hasMatch(key, content)
         const findKeywords = (content) => {
 
             scoreDict = {};
@@ -74,11 +107,13 @@ window.onload = function () {
             keywrdTracker = {};
 
             for (const [key, val] of Object.entries(tree3)) {
-                if (content.includes(key.toLowerCase())) {
-                    // console.log(key,"-----key",val,'--val');
+                if (content.includes(key.toLowerCase()) ) {
+                    console.log(key,"-----key",val,'--val');
                     if (idMapper[key]) {
                         // console.log(key,'---keyyyy');
-                        keywrdTracker[key] = countOccurances(content, key.toLowerCase());
+                        if (!(key in keywrdTracker)) {
+                            keywrdTracker[key] = countOccurances(content, key.toLowerCase());
+                        }
                         for (let id of idMapper[key]) {
 
                             if (id in scoreDict) {
@@ -140,6 +175,7 @@ window.onload = function () {
             }
             //some change
             // console.log(scoreDict);
+            console.log(keywrdTracker);
             return scoreDict;
         }
 
@@ -571,11 +607,12 @@ window.onload = function () {
                 for (let obj of PI_Sponsor[name]) {
                     for (let op of array) {
                         // console.log(ID_Sponsor[op.id]);
+                        if(ID_Sponsor[op.id]){
                         if (ID_Sponsor[op.id].includes(Object.keys(obj)[0])) {
                             console.log(Object.keys(obj)[0] + "   ---Matched---")
                             retArray.push(op);
                             set.add(op.id);
-                        }
+                        }}
                     }
                 }
                 for (let obj of array) {
@@ -585,6 +622,51 @@ window.onload = function () {
                 }
                 return retArray;
             }
+        }
+
+        const sortByDepartment = (PI_name) => {
+            // let 
+            // tree2;
+            // PI_DepartmentData
+            let dept_tree2Map = {};
+            console.log("sortybydept");
+            for (let [Spinkey, Spinval] of Object.entries(tree2)) {
+                for (let [Deptkey, Deptval] of Object.entries(PI_DepartmentData)) {
+                    //  console.log( Deptval.split(" "));
+                    let matchfound = false;
+                    for (let eachWrd of Deptval.split(" ")) {
+                        if (Spinkey.toLowerCase().includes(eachWrd.toLowerCase()) &&
+                            (eachWrd.indexOf('Science') == -1) && (eachWrd != 'and') && (eachWrd != 'Studies')
+                            && (eachWrd != 'for') && (eachWrd != 'of') && (eachWrd != '&') && (eachWrd != 'in') && (eachWrd != 'The')) {
+                            // console.log(Spinkey,'--',Deptval);
+                            matchfound = true;
+                            break;
+                        }
+                    }
+                    if (matchfound == true) {
+                        if (Deptval in dept_tree2Map) {
+                            //dept_tree2Map[Deptval]=[]
+                            if (dept_tree2Map[Deptval].includes(Spinkey) != true) { //check if spink key already exist for that dept and if exist don't insert
+                                let arr = [];
+                                arr = dept_tree2Map[Deptval];
+                                arr.push(Spinkey);
+                                dept_tree2Map[Deptval] = arr;
+                            }
+                        }
+                        else {
+                            dept_tree2Map[Deptval] = [Spinkey]
+                        }
+                    }
+                }
+            }
+
+            if (PI_name in PI_DepartmentData) {
+                let dept = PI_DepartmentData[PI_name];
+                let lvl2keys = dept_tree2Map[dept];
+                console.log(lvl2keys);
+            }
+
+            // console.log(dept_tree2Map);
         }
 
         let btn = document.getElementById("btn");
@@ -606,29 +688,30 @@ window.onload = function () {
                     similarResult[keys] = similarResult[keys] / 4;
                 }
                 // console.log('---------------');
-                let directMatchIds={};
-                for(let [kkey,kval] of Object.entries(keywrdTracker)){
-                    for(let mapId of idMapper[kkey]){
-                      if(directMatchIds[mapId]){  //case where id is repeated for other keywords
-                        directMatchIds[mapId]+=(100*(1-(0.5)**kval))/0.5;
-                      }
-                      else{
-                        directMatchIds[mapId]=(100*(1-(0.5)**kval))/0.5;
-                      }
+                let directMatchIds = {};
+                for (let [kkey, kval] of Object.entries(keywrdTracker)) {
+                    if (idMapper[kkey]) {
+                        for (let mapId of idMapper[kkey]) {
+                            if (directMatchIds[mapId]) {  //case where id is repeated for other keywords
+                                directMatchIds[mapId] += (100 * (1 - (0.5) ** kval)) / 0.5;
+                            }
+                            else {
+                                directMatchIds[mapId] = (100 * (1 - (0.5) ** kval)) / 0.5;
+                            }
+                        }
                     }
-
                 }
 
                 for (let [key, val] of Object.entries(similarResult)) {
-                    if(key in directMatchIds){
+                    if (key in directMatchIds) {
                         // console.log(val);
-                        similarResult[key]+=directMatchIds[key];
-                      }
-                      if(key in scoreDict){ //for sibling case
-                        if(scoreDict[key]>=2 && scoreDict[key]<8){
-                          similarResult[key]+=(10*(1-(0.5)**scoreDict[key]))/0.5;
+                        similarResult[key] += directMatchIds[key];
+                    }
+                    if (key in scoreDict) { //for sibling case
+                        if (scoreDict[key] >= 2 && scoreDict[key] < 8) {
+                            similarResult[key] += (10 * (1 - (0.5) ** scoreDict[key])) / 0.5;
                         }
-                      }
+                    }
                     // if (key in scoreDict) {
                     //     // similarResult[key] = val * scoreDict[key];
                     //     if (scoreDict[key] >= 8) {
@@ -685,28 +768,29 @@ window.onload = function () {
                         for (const [keys, vals] of Object.entries(similarResult)) {
                             similarResult[keys] = similarResult[keys] / 4;
                         }
-                        let directMatchIds={};
-                        for(let [kkey,kval] of Object.entries(keywrdTracker)){
-                            for(let mapId of idMapper[kkey]){
-                              if(directMatchIds[mapId]){  //case where id is repeated for other keywords
-                                directMatchIds[mapId]+=(100*(1-(0.5)**kval))/0.5;
-                              }
-                              else{
-                                directMatchIds[mapId]=(100*(1-(0.5)**kval))/0.5;
-                              }
+                        let directMatchIds = {};
+                        for (let [kkey, kval] of Object.entries(keywrdTracker)) {
+                            if (idMapper[kkey]) {
+                                for (let mapId of idMapper[kkey]) {
+                                    if (directMatchIds[mapId]) {  //case where id is repeated for other keywords
+                                        directMatchIds[mapId] += (100 * (1 - (0.5) ** kval)) / 0.5;
+                                    }
+                                    else {
+                                        directMatchIds[mapId] = (100 * (1 - (0.5) ** kval)) / 0.5;
+                                    }
+                                }
                             }
-        
                         }
                         for (let [key, val] of Object.entries(similarResult)) {
-                            if(key in directMatchIds){
+                            if (key in directMatchIds) {
                                 // console.log(val);
-                                similarResult[key]+=directMatchIds[key];
-                              }
-                              if(key in scoreDict){ //for sibling case
-                                if(scoreDict[key]>=2 && scoreDict[key]<8){
-                                  similarResult[key]+=(10*(1-(0.5)**scoreDict[key]))/0.5;
+                                similarResult[key] += directMatchIds[key];
+                            }
+                            if (key in scoreDict) { //for sibling case
+                                if (scoreDict[key] >= 2 && scoreDict[key] < 8) {
+                                    similarResult[key] += (10 * (1 - (0.5) ** scoreDict[key])) / 0.5;
                                 }
-                              }
+                            }
                             // if (key in scoreDict) {
                             //     // similarResult[key] = val * scoreDict[key];
                             //     if (scoreDict[key] >= 8) { //TODO - to prioritise the ids repeated more for direct keyword match
@@ -747,28 +831,29 @@ window.onload = function () {
                         for (const [keys, vals] of Object.entries(similarResult)) {
                             similarResult[keys] = similarResult[keys] / 4;
                         }
-                        let directMatchIds={};
-                        for(let [kkey,kval] of Object.entries(keywrdTracker)){
-                            for(let mapId of idMapper[kkey]){
-                              if(directMatchIds[mapId]){  //case where id is repeated for other keywords
-                                directMatchIds[mapId]+=(100*(1-(0.5)**kval))/0.5;
-                              }
-                              else{
-                                directMatchIds[mapId]=(100*(1-(0.5)**kval))/0.5;
-                              }
+                        let directMatchIds = {};
+                        for (let [kkey, kval] of Object.entries(keywrdTracker)) {
+                            if (idMapper[kkey]) {
+                                for (let mapId of idMapper[kkey]) {
+                                    if (directMatchIds[mapId]) {  //case where id is repeated for other keywords
+                                        directMatchIds[mapId] += (100 * (1 - (0.5) ** kval)) / 0.5;
+                                    }
+                                    else {
+                                        directMatchIds[mapId] = (100 * (1 - (0.5) ** kval)) / 0.5;
+                                    }
+                                }
                             }
-        
                         }
                         for (let [key, val] of Object.entries(similarResult)) {
-                            if(key in directMatchIds){
+                            if (key in directMatchIds) {
                                 // console.log(val);
-                                similarResult[key]+=directMatchIds[key];
-                              }
-                              if(key in scoreDict){ //for sibling case
-                                if(scoreDict[key]>=2 && scoreDict[key]<8){
-                                  similarResult[key]+=(10*(1-(0.5)**scoreDict[key]))/0.5;
+                                similarResult[key] += directMatchIds[key];
+                            }
+                            if (key in scoreDict) { //for sibling case
+                                if (scoreDict[key] >= 2 && scoreDict[key] < 8) {
+                                    similarResult[key] += (10 * (1 - (0.5) ** scoreDict[key])) / 0.5;
                                 }
-                              }
+                            }
                             // if (key in scoreDict) {
                             //     // similarResult[key] = val * scoreDict[key];
                             //     if (scoreDict[key] >= 8) {   //multiply the times it got repeated
@@ -787,10 +872,12 @@ window.onload = function () {
                             // tobj[key]={score:val};
                             sortArray.push(tobj);
                         }
+                        let fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
+                        sortByDepartment(fullName);
                         sortArray.sort((a, b) => b.score - a.score);
                         let filteredArray = checkDeadLines(sortArray);
                         // console.log(filteredArray.slice(0,20),"filtererererer");
-                        let fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
+
                         let final = SortBySponName(filteredArray.slice(0, 20), fullName); //do any scoring logic before sortby sponsor
                         console.log("The following abstracts found-->\n", final)
                         tableCreate(final);
@@ -817,29 +904,30 @@ window.onload = function () {
                         similarResult[keys] = similarResult[keys] / 4;
                     }
 
-                    let directMatchIds={};
-                    for(let [kkey,kval] of Object.entries(keywrdTracker)){
-                        for(let mapId of idMapper[kkey]){
-                          if(directMatchIds[mapId]){  //case where id is repeated for other keywords
-                            directMatchIds[mapId]+=(100*(1-(0.5)**kval))/0.5;
-                          }
-                          else{
-                            directMatchIds[mapId]=(100*(1-(0.5)**kval))/0.5;
-                          }
+                    let directMatchIds = {};
+                    for (let [kkey, kval] of Object.entries(keywrdTracker)) {
+                        if (idMapper[kkey]) {
+                            for (let mapId of idMapper[kkey]) {
+                                if (directMatchIds[mapId]) {  //case where id is repeated for other keywords
+                                    directMatchIds[mapId] += (100 * (1 - (0.5) ** kval)) / 0.5;
+                                }
+                                else {
+                                    directMatchIds[mapId] = (100 * (1 - (0.5) ** kval)) / 0.5;
+                                }
+                            }
                         }
-    
                     }
 
                     for (let [key, val] of Object.entries(similarResult)) {
-                        if(key in directMatchIds){
+                        if (key in directMatchIds) {
                             // console.log(val);
-                            similarResult[key]+=directMatchIds[key];
-                          }
-                          if(key in scoreDict){ //for sibling case
-                            if(scoreDict[key]>=2 && scoreDict[key]<8){
-                              similarResult[key]+=(10*(1-(0.5)**scoreDict[key]))/0.5;
+                            similarResult[key] += directMatchIds[key];
+                        }
+                        if (key in scoreDict) { //for sibling case
+                            if (scoreDict[key] >= 2 && scoreDict[key] < 8) {
+                                similarResult[key] += (10 * (1 - (0.5) ** scoreDict[key])) / 0.5;
                             }
-                          }
+                        }
                         // if (key in scoreDict) {
                         //     // similarResult[key] = val * scoreDict[key];
                         //     if (scoreDict[key] >= 8) { //TODO - to prioritise the ids repeated more for direct keyword match
