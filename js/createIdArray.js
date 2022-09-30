@@ -50,7 +50,55 @@ async function main() {
 
     let newTree3={}
 
+    
+    let newTree32={}
+    
+    // console.log("--with more than slashes -------------------");
+    
     for(let [key,val] of Object.entries(dict2)){
+        if(key.includes("/") ){
+            let c=0;
+            for(let i=0;i<key.length;i++){
+                if(key[i]=='/'){
+                    c+=1;
+                }
+            }
+            if(c>1){
+            let spaceSplit=key.split(" ");
+                let newArr=[];
+                for(let i=0;i<spaceSplit.length;i++){
+                    if(spaceSplit[i].includes("/")){
+                        let slashsplit=spaceSplit[i].split("/")
+                        
+                            for(let j=0;j<slashsplit.length;j++){
+                                let s=[]
+                                for(let k=0;k<spaceSplit.length;k++){
+                                    if(k!=i){
+                                        s.push(spaceSplit[k])
+                                    }
+                                    else{
+                                        s.push(slashsplit[j])
+                                    }
+                                }
+                                newArr.push(s);
+                                // console.log(s);
+                                newTree32[s.join(" ")]=val;
+                            }
+                        
+                    }
+                }
+    
+        }
+    }
+    else{
+        newTree32[key]=val;
+    }
+    }
+    
+    
+    for(let [key,val] of Object.entries(newTree32)){
+        if(key.includes("/")){
+        }
         let c=0;
         for(let k=0;k<key.length;k++){
             if(key[k]=='/'){
@@ -59,36 +107,27 @@ async function main() {
         }
         if(c==1){
             let nk=key.split(" ")
-            // console.log(nk);
             let comb1Arr=[];
             let comb2Arr=[];
             let slCom=[];
             for(let i of nk){
-                if(i.indexOf('/')!=-1){
+                if(i.indexOf('/')!=-1 ){
                     slCom=i.split("/");
-                    // console.log(slCom);
                     comb1Arr.push(slCom[0]);
                     comb2Arr.push(slCom[1]);
                 }
                 else{
                     comb1Arr.push(i);
                     comb2Arr.push(i);
-                   
                 }
             }
-            // console.log(key);
-            // console.log(key,"==> ",comb1Arr.join(" "));
-            // console.log(key,"==> ",comb2Arr.join(" "));
-    
             newTree3[comb1Arr.join(" ")]=val;
             newTree3[comb2Arr.join(" ")]=val;
         }
         else{
             newTree3[key]=val;
         }
-        
     }
-
 
     fs.writeFileSync(keyIdArrFile, JSON.stringify(newTree3));
     // console.log(dict);
