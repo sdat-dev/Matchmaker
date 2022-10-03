@@ -116,11 +116,16 @@ for(let [key,val] of Object.entries(level3_lvl2)){
             }
 
     }
+    else{
+        newTree32[key]=val;
+    }
 }
 else{
     newTree32[key]=val;
 }
 }
+
+// console.log(newTree32);
 
 
 for(let [key,val] of Object.entries(newTree32)){
@@ -155,6 +160,8 @@ for(let [key,val] of Object.entries(newTree32)){
         newTree3[key]=val;
     }
 }
+
+// console.log(newTree3);
 
 // fs.writeFileSync(tree3path,JSON.stringify(newTree3));
 fs.writeFileSync(tree3File,JSON.stringify(newTree3));
