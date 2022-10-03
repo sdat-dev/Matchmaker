@@ -86,9 +86,26 @@ for(let [key,val] of Object.entries(newTree32)){
         newTree3[key]=val;
     }
 }
-console.log(newTree3);
+// console.log(newTree3);
 
 
+// console.log(treeData);
+let newTreeWithComma={};
+for (let [key,val] of  Object.entries( treeData)){
+    if(key.includes(",")){
+    const words = key.split(',').map(n=>n.trim());
+       
+        newTreeWithComma[words.join(" ")]=val;
+
+    let withreverse= words.reverse();
+    newTreeWithComma[withreverse.join(" ")]=val;
+}
+else{
+    newTreeWithComma[key]=val;
+}
+
+}
+console.log(newTreeWithComma);
 
 
 

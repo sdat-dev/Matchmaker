@@ -132,7 +132,23 @@ async function main() {
         }
     }
 
-    fs.writeFileSync(keyIdArrFile, JSON.stringify(newTree3));
+    let newTreeWithComma={};
+for (let [key,val] of  Object.entries( newTree3)){
+    if(key.includes(",")){
+    const words = key.split(',').map(n=>n.trim());
+       
+        newTreeWithComma[words.join(" ")]=val;
+
+    let withreverse= words.reverse();
+    newTreeWithComma[withreverse.join(" ")]=val;
+}
+else{
+    newTreeWithComma[key]=val;
+}
+
+}
+
+    fs.writeFileSync(keyIdArrFile, JSON.stringify(newTreeWithComma));
     // console.log(dict);
     // mostUsedWords(dict);
     // result[text] = checkSimilarity(text,dictJson)

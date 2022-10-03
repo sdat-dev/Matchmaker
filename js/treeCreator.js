@@ -161,10 +161,26 @@ for(let [key,val] of Object.entries(newTree32)){
     }
 }
 
+let newTreeWithComma={};
+for (let [key,val] of  Object.entries( newTree3)){
+    if(key.includes(",")){
+    const words = key.split(',').map(n=>n.trim());
+       
+        newTreeWithComma[words.join(" ")]=val;
+
+    let withreverse= words.reverse();
+    newTreeWithComma[withreverse.join(" ")]=val;
+}
+else{
+    newTreeWithComma[key]=val;
+}
+
+}
+
 // console.log(newTree3);
 
 // fs.writeFileSync(tree3path,JSON.stringify(newTree3));
-fs.writeFileSync(tree3File,JSON.stringify(newTree3));
+fs.writeFileSync(tree3File,JSON.stringify(newTreeWithComma));
 
 fs.writeFileSync(tree2File,JSON.stringify(level2_3arr));
 fs.writeFileSync(tree1File,JSON.stringify(level1_2));
