@@ -107,7 +107,8 @@ window.onload = function () {
             keywrdTracker = {};
 
             for (const [key, val] of Object.entries(tree3)) {
-                if (content.includes(key.toLowerCase()) ) {
+                let matchIndex=content.toLowerCase().indexOf(key.toLowerCase());
+                if(matchIndex!=-1 && (content.charAt(matchIndex-1) ===' ' && content.charAt(matchIndex+(key.length)) ===' ') ){
                     console.log(key,"-----key",val,'--val');
                     if (idMapper[key]) {
                         // console.log(key,'---keyyyy');
